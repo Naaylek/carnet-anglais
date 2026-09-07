@@ -1351,8 +1351,11 @@ document.getElementById('btn-res-again').onclick = ()=>{
 const PAGES_URL = 'https://naaylek.github.io/carnet-anglais/';
 const ON_ARTIFACT = /claude\.ai|claudeusercontent/i.test(location.hostname);
 const DB_KEY = 'carnet-anglais-dburl';
+/* Base du couple, intégrée par défaut — plus rien à configurer.
+   (Reste remplaçable via ?db=… ou la carte de configuration.) */
+const DEFAULT_DB = 'https://carnet-anglais-default-rtdb.europe-west1.firebasedatabase.app';
 let memDbUrl = '';
-function dbUrl(){ try{ return localStorage.getItem(DB_KEY)||memDbUrl; }catch(e){ return memDbUrl; } }
+function dbUrl(){ try{ return localStorage.getItem(DB_KEY)||memDbUrl||DEFAULT_DB; }catch(e){ return memDbUrl||DEFAULT_DB; } }
 function setDbUrl(u){ memDbUrl=u; try{ localStorage.setItem(DB_KEY,u); }catch(e){} }
 function validDbUrl(u){ return /^https:\/\/[\w-]+(\.[\w-]+)*\.(firebasedatabase\.app|firebaseio\.com)$/.test(u); }
 /* Lien pré-configuré : ?db=… dans l'URL enregistre la base en un clic */
