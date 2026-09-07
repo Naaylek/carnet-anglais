@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2B50D8">
+<title>Notre Carnet d'Anglais</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;700;800&display=swap">
+</head>
+<body>
+<style>
+  :root{
+    --bg:#F7F6F1; --card:#FFFFFF; --text:#26304D; --muted:#6C7590;
+    --accent:#2B50D8; --accent-soft:#E4EAFC; --on-accent:#FFFFFF;
+    --line:#D8E0EF; --margin:#E2574B;
+    --good:#237E55; --good-bg:#E6F5EE; --good-border:#9AD4B8;
+    --bad:#C24540; --bad-bg:#FBEAE9; --bad-border:#EBB4B1;
+    --chip:#FFFFFF; --chip-border:#B9C6E4; --shadow:rgba(38,48,77,.14);
+    --input-bg:#FFFFFF;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141929; --card:#1E2440; --text:#E9ECF8; --muted:#9AA3C0;
+      --accent:#8CA2F2; --accent-soft:#2A3357; --on-accent:#10152A;
+      --line:#2A3357; --margin:#E2574B;
+      --good:#6FD3A4; --good-bg:#1C3A2E; --good-border:#2E5C47;
+      --bad:#F0918C; --bad-bg:#45242A; --bad-border:#6B3A3E;
+      --chip:#232A4C; --chip-border:#3A4470; --shadow:rgba(0,0,0,.45);
+      --input-bg:#191F38;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141929; --card:#1E2440; --text:#E9ECF8; --muted:#9AA3C0;
+    --accent:#8CA2F2; --accent-soft:#2A3357; --on-accent:#10152A;
+    --line:#2A3357; --margin:#E2574B;
+    --good:#6FD3A4; --good-bg:#1C3A2E; --good-border:#2E5C47;
+    --bad:#F0918C; --bad-bg:#45242A; --bad-border:#6B3A3E;
+    --chip:#232A4C; --chip-border:#3A4470; --shadow:rgba(0,0,0,.45);
+    --input-bg:#191F38;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size:17px; line-height:1.5; min-height:100vh;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:16px 16px 120px;}
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important; transition:none !important;}
+  }
+
+  h1,h2,.hand{
+    font-family:'Caveat', 'Segoe Script', cursive;
+    letter-spacing:.5px; text-wrap:balance;
+  }
+  h1{font-size:44px; margin:8px 0 2px; color:var(--accent);}
+  h2{font-size:32px; margin:0 0 8px;}
+  .sub{color:var(--muted); margin:0 0 20px;}
+
+  /* Notebook card: ruled lines + red margin */
+  .paper{
+    position:relative; background:var(--card);
+    border:1.5px solid var(--line); border-radius:14px;
+    box-shadow:0 3px 0 var(--shadow);
+    padding:20px 20px 20px 34px; margin-bottom:16px; overflow:hidden;
+  }
+  .paper::before{
+    content:""; position:absolute; inset:0 auto 0 22px; width:2px;
+    background:var(--margin); opacity:.55;
+  }
+  .card{
+    background:var(--card); border:1.5px solid var(--line); border-radius:14px;
+    box-shadow:0 3px 0 var(--shadow); padding:18px 20px; margin-bottom:14px;
+  }
+
+  button{font-family:inherit; font-size:17px; cursor:pointer;}
+  .btn{
+    display:block; width:100%; padding:15px 18px; border-radius:14px;
+    border:2px solid var(--accent); background:var(--accent); color:var(--on-accent);
+    font-weight:800; box-shadow:0 3px 0 var(--shadow);
+    transition:transform .06s ease;
+  }
+  .btn:active{transform:translateY(2px); box-shadow:0 1px 0 var(--shadow);}
+  .btn.secondary{background:var(--card); color:var(--accent);}
+  .btn.ghost{background:transparent; border-color:var(--line); color:var(--text); box-shadow:none;}
+  .btn:disabled{opacity:.45; cursor:default;}
+  .btn:focus-visible, .opt:focus-visible, .chip:focus-visible, input:focus-visible{
+    outline:3px solid var(--accent); outline-offset:2px;
+  }
+  .row{display:flex; gap:10px;}
+  .row .btn{flex:1;}
+
+  /* Top bar */
+  .topbar{display:flex; align-items:center; gap:12px; padding:6px 0 14px;}
+  .topbar .quit{
+    border:none; background:none; color:var(--muted); font-size:26px; line-height:1;
+    padding:4px 8px; border-radius:8px;
+  }
+  .progress{flex:1; height:14px; background:var(--accent-soft); border-radius:99px; overflow:hidden;}
+  .progress > div{height:100%; width:0%; background:var(--accent); border-radius:99px; transition:width .3s ease;}
+
+  .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--accent-soft); color:var(--text);
+    border-radius:99px; padding:4px 12px; font-weight:800; font-size:14px;
+  }
+  .stats{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+
+  .catline{color:var(--muted); font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:1.2px; margin-bottom:8px;}
+  .question{font-size:20px; font-weight:700; margin:0 0 16px;}
+  .question .hint{color:var(--muted); font-weight:400;}
+
+  /* QCM options */
+  .opts{display:flex; flex-direction:column; gap:10px;}
+  .opt{
+    text-align:left; padding:13px 16px; border-radius:12px;
+    border:2px solid var(--chip-border); background:var(--chip); color:var(--text);
+    font-weight:700; box-shadow:0 2px 0 var(--shadow);
+  }
+  .opt.selected{border-color:var(--accent); background:var(--accent-soft);}
+  .opt.correct{border-color:var(--good); background:var(--good-bg); color:var(--good);}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-bg); color:var(--bad);}
+  .opt:disabled{cursor:default;}
+
+  /* Word chips */
+  .answer-zone{
+    min-height:56px; border-bottom:2px dashed var(--chip-border);
+    display:flex; flex-wrap:wrap; gap:8px; padding:6px 2px 10px; margin-bottom:18px;
+  }
+  .chip-bank{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    padding:9px 14px; border-radius:12px; border:2px solid var(--chip-border);
+    background:var(--chip); color:var(--text); font-weight:700;
+    box-shadow:0 2px 0 var(--shadow);
+  }
+  .chip.used{opacity:.25; pointer-events:none;}
+
+  input[type=text]{
+    width:100%; padding:14px 16px; font-size:18px; font-family:inherit;
+    border:2px solid var(--chip-border); border-radius:12px;
+    background:var(--input-bg); color:var(--text);
+  }
+
+  /* Feedback panel */
+  .feedback{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    transform:translateY(105%); transition:transform .25s ease;
+  }
+  .feedback.show{transform:none;}
+  .feedback-inner{
+    max-width:560px; margin:0 auto; padding:18px 20px 26px;
+    border-radius:18px 18px 0 0; border:2px solid; border-bottom:none;
+  }
+  .feedback.good .feedback-inner{background:var(--good-bg); border-color:var(--good-border);}
+  .feedback.bad  .feedback-inner{background:var(--bad-bg); border-color:var(--bad-border);}
+  .feedback .title{font-family:'Caveat',cursive; font-size:30px; margin:0 0 4px;}
+  .feedback.good .title{color:var(--good);}
+  .feedback.bad  .title{color:var(--bad);}
+  .feedback .expected{font-weight:800; margin:2px 0 6px;}
+  .feedback .expl{margin:0 0 14px; font-size:15.5px;}
+  .feedback .btn{border-color:transparent;}
+  .feedback.good .btn{background:var(--good); color:#fff;}
+  .feedback.bad  .btn{background:var(--bad); color:#fff;}
+
+  /* Check bar */
+  .checkbar{position:fixed; left:0; right:0; bottom:0; z-index:40; background:linear-gradient(transparent, var(--bg) 35%); padding:24px 16px 20px;}
+  .checkbar .btn{max-width:560px; margin:0 auto;}
+
+  /* Results */
+  .score-big{font-family:'Caveat',cursive; font-size:64px; color:var(--accent); margin:0; line-height:1;}
+  .mistake{border-left:4px solid var(--bad); padding:10px 14px; margin:12px 0; background:var(--bad-bg); border-radius:0 12px 12px 0;}
+  .mistake .q{font-weight:800; margin:0 0 4px;}
+  .mistake .yours{color:var(--bad); margin:0; font-size:15px;}
+  .mistake .good-a{color:var(--good); font-weight:800; margin:0; font-size:15px;}
+  .mistake .why{margin:6px 0 0; font-size:14.5px; color:var(--text);}
+
+  /* Profiles */
+  .profile-btn{
+    display:flex; align-items:center; gap:14px; width:100%;
+    padding:16px 18px; margin-bottom:12px;
+    background:var(--card); border:2px solid var(--chip-border); border-radius:14px;
+    box-shadow:0 3px 0 var(--shadow); font-weight:800; font-size:19px; color:var(--text);
+  }
+  .avatar{
+    width:44px; height:44px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft); font-size:22px;
+  }
+  .menu-item{
+    display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+    padding:16px 18px; margin-bottom:12px;
+    background:var(--card); border:2px solid var(--chip-border); border-radius:14px;
+    box-shadow:0 3px 0 var(--shadow); color:var(--text);
+  }
+  .menu-item .t{font-weight:800; font-size:17px;}
+  .menu-item .d{color:var(--muted); font-size:14px;}
+  .menu-item:disabled{opacity:.5;}
+  .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .cat-grid .menu-item{margin:0; flex-direction:column; align-items:flex-start; gap:4px;}
+
+  .footer-note{color:var(--muted); font-size:13px; text-align:center; margin-top:24px;}
+  .linkish{background:none; border:none; color:var(--muted); text-decoration:underline; font-size:14px; padding:4px;}
+
+  /* Quit dialog */
+  .quit-dialog{
+    background:var(--card); border:2px solid var(--bad-border); border-radius:14px;
+    box-shadow:0 3px 0 var(--shadow); padding:16px 18px; margin-bottom:14px;
+  }
+  .quit-dialog p{font-weight:800; margin:0 0 12px;}
+
+  /* Tense hint */
+  .tense{
+    display:inline-block; background:var(--accent-soft); color:var(--text);
+    border-radius:99px; padding:3px 12px; font-size:13.5px; font-weight:800; margin:0 0 14px;
+  }
+
+  /* Duo card */
+  .duo-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed var(--line);}
+  .duo-row:last-of-type{border-bottom:none;}
+  .duo-row .name{font-weight:800; flex:1;}
+  .duo-row .meta{color:var(--muted); font-size:14px; font-variant-numeric:tabular-nums;}
+  .sync-status{font-size:13px; color:var(--muted); margin:8px 0 10px;}
+
+  /* Confetti */
+  .confetti{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:100;}
+  .confetti span{
+    position:absolute; top:-20px; width:10px; height:14px; border-radius:3px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{transform:translateY(110vh) rotate(720deg); opacity:.9;}
+  }
+</style>
+
+<div class="wrap">
+
+  <!-- ============ PROFILES ============ -->
+  <div id="screen-profiles" class="screen">
+    <h1>Notre Carnet d'Anglais</h1>
+    <p class="sub">Qui révise aujourd'hui ?</p>
+    <div id="profile-list"></div>
+    <div class="paper" id="profile-setup" style="display:none">
+      <h2>Vos deux prénoms</h2>
+      <p class="sub" style="margin-bottom:12px">Chacun aura son score, sa série et ses révisions.</p>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px">
+        <input type="text" id="name1" placeholder="Prénom 1" value="Kélyan" autocomplete="off">
+        <input type="text" id="name2" placeholder="Prénom 2" value="Laurence" autocomplete="off">
+      </div>
+      <button class="btn" id="btn-create-profiles">C'est parti !</button>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <div id="screen-home" class="screen">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h1 id="home-title">Hello !</h1>
+      <button class="linkish" id="btn-switch">changer de profil</button>
+    </div>
+    <div class="stats">
+      <span class="badge">🔥 <span id="stat-streak">0</span> j de série</span>
+      <span class="badge">⭐ <span id="stat-xp">0</span> XP</span>
+      <span class="badge">📚 <span id="stat-sessions">0</span> séances</span>
+    </div>
+
+    <div class="card" id="duo-card">
+      <p class="catline" style="margin-top:0">💙 Vous deux</p>
+      <div id="duo-rows"></div>
+      <p class="sync-status" id="sync-status"></p>
+      <div id="db-setup" hidden>
+        <p style="font-size:14.5px; margin:0 0 10px">Pour voir les scores de l'autre en direct, branchez une petite base gratuite (5 min, une seule fois, par l'un de vous deux) :</p>
+        <ol style="font-size:14px; margin:0 0 12px; padding-left:20px; color:var(--muted)">
+          <li>Va sur <strong>console.firebase.google.com</strong> (compte Google) → « Créer un projet » (nom libre, Analytics inutile).</li>
+          <li>Menu « Realtime Database » → « Créer une base de données » → mode test.</li>
+          <li>Onglet « Règles » : mets <code>".read": true, ".write": true</code> puis Publier (sinon ça se verrouille au bout de 30 jours).</li>
+          <li>Copie l'adresse affichée en haut (https://…firebasedatabase.app) et colle-la ici :</li>
+        </ol>
+        <input type="text" id="db-input" placeholder="https://…firebasedatabase.app" autocomplete="off" style="margin-bottom:10px">
+        <button class="btn secondary" id="btn-db-save">Activer la synchro</button>
+      </div>
+      <div id="db-share" hidden>
+        <p style="font-size:13.5px; margin:10px 0 6px; color:var(--muted)">Lien à envoyer à l'autre (synchro déjà configurée dedans) :</p>
+        <input type="text" id="db-share-link" readonly onclick="this.select()">
+      </div>
+      <button class="btn secondary" id="btn-sync" hidden>Mettre à jour maintenant</button>
+    </div>
+
+    <button class="menu-item" id="btn-daily">
+      <span class="avatar">📅</span>
+      <span>
+        <span class="t">Séance du jour</span><br>
+        <span class="d" id="daily-desc">10 questions — les mêmes pour vous deux 💙</span>
+      </span>
+    </button>
+
+    <button class="menu-item" id="btn-review">
+      <span class="avatar">🩹</span>
+      <span>
+        <span class="t">Réviser mes erreurs</span><br>
+        <span class="d" id="review-desc">Rejouer les questions ratées</span>
+      </span>
+    </button>
+
+    <p class="catline" style="margin-top:22px">Ou travailler un thème</p>
+    <div class="cat-grid">
+      <button class="menu-item cat" data-cat="vocab"><span class="t">📖 Vocabulaire</span><span class="d">mots de vos cours</span></button>
+      <button class="menu-item cat" data-cat="conj"><span class="t">⏳ Conjugaison</span><span class="d">tous les temps</span></button>
+      <button class="menu-item cat" data-cat="trad"><span class="t">🔁 Traduction</span><span class="d">FR → EN</span></button>
+      <button class="menu-item cat" data-cat="gram"><span class="t">🧩 Grammaire</span><span class="d">pièges & règles</span></button>
+    </div>
+
+    <p class="footer-note">Basé sur vos notes de cours 📓 — vos scores se synchronisent automatiquement entre vos deux téléphones.</p>
+  </div>
+
+  <!-- ============ QUIZ ============ -->
+  <div id="screen-quiz" class="screen">
+    <div class="topbar">
+      <button class="quit" id="btn-quit" aria-label="Quitter la séance">×</button>
+      <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+      <span class="badge" id="quiz-count">1/10</span>
+    </div>
+    <div class="quit-dialog" id="quit-dialog" style="display:none">
+      <p>Quitter la séance en cours ?</p>
+      <div class="row">
+        <button class="btn ghost" id="btn-quit-no">Non, je continue</button>
+        <button class="btn" id="btn-quit-yes">Oui, quitter</button>
+      </div>
+    </div>
+    <div class="paper">
+      <p class="catline" id="q-cat">Vocabulaire</p>
+      <p class="question" id="q-text"></p>
+      <div id="q-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ RESULTS ============ -->
+  <div id="screen-results" class="screen">
+    <div class="paper" style="text-align:center">
+      <p class="score-big" id="res-score">8/10</p>
+      <h2 id="res-title">Bien joué !</h2>
+      <p class="sub" id="res-sub"></p>
+    </div>
+    <div id="res-mistakes"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn secondary" id="btn-res-home">Accueil</button>
+      <button class="btn" id="btn-res-again">Rejouer</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Check bar + feedback -->
+<div class="checkbar" id="checkbar" style="display:none">
+  <button class="btn" id="btn-check" disabled>Vérifier</button>
+</div>
+<div class="feedback" id="feedback" aria-live="polite">
+  <div class="feedback-inner">
+    <p class="title" id="fb-title"></p>
+    <p class="expected" id="fb-expected"></p>
+    <p class="expl" id="fb-expl"></p>
+    <button class="btn" id="btn-continue">Continuer</button>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+/* ================================================================
+   BANQUE D'EXERCICES — tirée du carnet de cours (prof d'anglais)
+   types : qcm | fill (texte à trou) | order (mots à remettre) | write (traduction libre)
+   ================================================================ */
+const BANK = [
+
+/* ---------- VOCABULAIRE ---------- */
+{id:'v1',cat:'vocab',type:'qcm',q:'Comment dit-on « farine » ?',choices:['flower','flour','floor','flavour'],a:'flour',
+ expl:'Flour (farine) et flower (fleur) se prononcent exactement pareil. Floor = le sol, flavour = le goût.'},
+{id:'v2',cat:'vocab',type:'qcm',q:'« Lead » (le métal, le plomb) se prononce…',choices:['« liide » comme "lead" (mener)','« led » comme la couleur "red"','« léïd »','« lod »'],a:'« led » comme la couleur "red"',
+ expl:'Deux mots écrits pareil : to lead (« liide ») = mener, et lead (« led ») = le plomb. Comme dans votre carnet !'},
+{id:'v3',cat:'vocab',type:'qcm',q:'L\'éclair (dans le ciel), c\'est…',choices:['thunder','lightning','storm','flash'],a:'lightning',
+ expl:'Lightning = l\'éclair (visuel), thunder = le tonnerre (le bruit). "I couldn\'t sleep because of the thunder!"'},
+{id:'v4',cat:'vocab',type:'qcm',q:'« Ascenseur » en anglais britannique :',choices:['elevator','lift','riser','climber'],a:'lift',
+ expl:'Lift au Royaume-Uni, elevator aux États-Unis. To lift veut aussi dire soulever.'},
+{id:'v5',cat:'vocab',type:'qcm',q:'« Cardboard », c\'est…',choices:['du carton','un tableau de bord','une carte','du plâtre'],a:'du carton',
+ expl:'Cardboard = le carton (la matière). Une boîte en carton = a cardboard box.'},
+{id:'v6',cat:'vocab',type:'qcm',q:'« To imply » signifie…',choices:['employer','sous-entendre','imposer','impliquer quelqu\'un dans un crime'],a:'sous-entendre',
+ expl:'To imply = sous-entendre / laisser entendre. "What are you implying?" = Qu\'est-ce que tu insinues ?'},
+{id:'v7',cat:'vocab',type:'qcm',q:'« Injured » veut dire…',choices:['insulté','blessé (physiquement)','vexé','injurié'],a:'blessé (physiquement)',
+ expl:'Injured = hurt = blessé physiquement. Vexer quelqu\'un = to offend. Faux ami : ça ne veut pas dire "injurié" !'},
+{id:'v8',cat:'vocab',type:'qcm',q:'« Arrière-grand-père » se dit…',choices:['old-grandfather','far-grandfather','great-grandfather','big-grandfather'],a:'great-grandfather',
+ expl:'Great-grandfather = arrière-grand-père. Great sert aussi pour « super » — mais pas grate (= râper / une grille) !'},
+{id:'v9',cat:'vocab',type:'qcm',q:'« To grate » (avec un A), c\'est…',choices:['être super','gratter','râper','griller'],a:'râper',
+ expl:'To grate = râper (grated cheese = fromage râpé) et a grate = une grille. À ne pas confondre avec great = super.'},
+{id:'v10',cat:'vocab',type:'qcm',q:'« Béquilles » se dit…',choices:['crutches','sticks','crotches','canes'],a:'crutches',
+ expl:'Crutches = béquilles. "I sprained my ankle, I\'m on crutches." Attention à l\'orthographe (≠ crotches 😅).'},
+{id:'v11',cat:'vocab',type:'qcm',q:'« Ankle », c\'est…',choices:['le genou','la cheville','le coude','l\'ongle'],a:'la cheville',
+ expl:'Ankle = cheville. L\'ongle = nail, le genou = knee, le coude = elbow.'},
+{id:'v12',cat:'vocab',type:'qcm',q:'« Lukewarm » veut dire…',choices:['brûlant','tiède','glacé','chaleureux'],a:'tiède',
+ expl:'Lukewarm = tiède (plus froid que warm). Utile pour l\'eau, le café… et les réactions peu enthousiastes !'},
+{id:'v13',cat:'vocab',type:'qcm',q:'« Thorough » signifie…',choices:['à travers','rigoureux, minutieux','pourtant','profond'],a:'rigoureux, minutieux',
+ expl:'Thorough = rigoureux/minutieux. Ne pas confondre avec through (à travers) ni though (pourtant).'},
+{id:'v14',cat:'vocab',type:'qcm',q:'« To struggle », c\'est…',choices:['étrangler','galérer, avoir du mal','se battre en duel','structurer'],a:'galérer, avoir du mal',
+ expl:'To struggle = galérer, avoir du mal. "Without glasses, he struggled to see." = Sans lunettes, il avait du mal à voir.'},
+{id:'v15',cat:'vocab',type:'qcm',q:'« A loophole », c\'est…',choices:['un trou de souris','une faille (dans une règle ou une loi)','une boucle','un piège'],a:'une faille (dans une règle ou une loi)',
+ expl:'A loophole = une faille, une zone d\'ombre dans une règle ou une loi, qu\'on peut exploiter.'},
+{id:'v16',cat:'vocab',type:'qcm',q:'« Tiroir » se dit…',choices:['drawer','shelf','locker','tray'],a:'drawer',
+ expl:'Drawer = tiroir (de to draw, tirer). Shelf = étagère, tray = plateau.'},
+{id:'v17',cat:'vocab',type:'qcm',q:'Quelle est la différence entre « cloth » et « clothes » ?',choices:['aucune','cloth = tissu/torchon, clothes = vêtements','cloth = vêtement, clothes = tissus','cloth est le singulier de clothes'],a:'cloth = tissu/torchon, clothes = vêtements',
+ expl:'Cloth = le tissu, un torchon. Clothes = les vêtements (toujours pluriel). "A cloth" n\'est jamais un vêtement.'},
+{id:'v18',cat:'vocab',type:'qcm',q:'« Odd » veut dire à la fois…',choices:['pair et normal','impair et bizarre','rond et étrange','vieux et rare'],a:'impair et bizarre',
+ expl:'Odd = impair (odd number) ET bizarre (that\'s odd!). Even = pair. Et the odds = les chances, les probabilités.'},
+{id:'v19',cat:'vocab',type:'qcm',q:'« To nag », c\'est…',choices:['nager','insister lourdement, harceler','ronchonner','négocier'],a:'insister lourdement, harceler',
+ expl:'To nag = répéter/insister lourdement pour que quelqu\'un fasse quelque chose. "Stop nagging me!"'},
+{id:'v20',cat:'vocab',type:'qcm',q:'« Behaviour », c\'est…',choices:['le comportement','la politesse','le bonheur','la bravoure'],a:'le comportement',
+ expl:'Behaviour (UK) / behavior (US) = le comportement. Well-being = le bien-être.'},
+{id:'v21',cat:'vocab',type:'qcm',q:'« Towards » signifie…',choices:['vers, en direction de','contre','à côté de','en arrière'],a:'vers, en direction de',
+ expl:'Towards = vers / se diriger vers. "She walked towards the door."'},
+{id:'v22',cat:'vocab',type:'qcm',q:'« Chip » et « fleas » :',choices:['chip = frite, fleas = flair','chip = puce électronique, fleas = puces (l\'animal)','les deux veulent dire puce électronique','chip = puce animale, fleas = puces électroniques'],a:'chip = puce électronique, fleas = puces (l\'animal)',
+ expl:'A chip = puce électronique (et frite au UK !). Fleas = les puces, l\'insecte. Deux « puces » différentes en anglais.'},
+{id:'v23',cat:'vocab',type:'qcm',q:'« A bruise », c\'est…',choices:['une brûlure','un bleu (sur la peau)','une bosse','une égratignure'],a:'un bleu (sur la peau)',
+ expl:'A bruise = un bleu, un hématome. "They had hit me so hard that I had a bruise."'},
+{id:'v24',cat:'vocab',type:'qcm',q:'« Se vanter » se dit…',choices:['to brag','to brew','to bounce','to browse'],a:'to brag',
+ expl:'To brag = to show off = se vanter. "I bragged because I had been on vacation."'},
+{id:'v25',cat:'vocab',type:'qcm',q:'« A brat », c\'est…',choices:['un rat','un enfant pourri gâté','une brute','un ami proche'],a:'un enfant pourri gâté',
+ expl:'A brat = un enfant pourri gâté, insupportable. (Les poupées Bratz viennent de là !)'},
+{id:'v26',cat:'vocab',type:'qcm',q:'« Sourcil » se dit…',choices:['eyelash','eyebrow','eyelid','browse'],a:'eyebrow',
+ expl:'Eyebrow (ou brow) = sourcil. Eyelash = cil, eyelid = paupière.'},
+{id:'v27',cat:'vocab',type:'qcm',q:'« To brew », c\'est…',choices:['brasser / infuser','bouillir','brûler','boire'],a:'brasser / infuser',
+ expl:'To brew = infuser (thé), brasser (bière). "He was brewing his tea." A brew = une infusion.'},
+{id:'v28',cat:'vocab',type:'qcm',q:'« Naviguer sur internet » se dit…',choices:['to sail the web','to browse the web','to swim online','to drive online'],a:'to browse the web',
+ expl:'To browse = naviguer en ligne (d\'où browser = navigateur). To sail = naviguer en bateau.'},
+{id:'v29',cat:'vocab',type:'qcm',q:'Des os « fragiles » sont…',choices:['brittle','bratty','bubbly','broken'],a:'brittle',
+ expl:'Brittle = fragile, cassant (pour les os, le verre…). "I\'ve had many broken bones, they are brittle."'},
+{id:'v30',cat:'vocab',type:'qcm',q:'« Effrayant » se dit…',choices:['scared','scary','scarred','scar'],a:'scary',
+ expl:'Scary = effrayant, scared = effrayé, scar = cicatrice, scarred = marqué par des cicatrices. Quatre mots très proches !'},
+{id:'v31',cat:'vocab',type:'qcm',q:'« Cache-cache », c\'est…',choices:['hide and find','hide and seek','seek and hide','catch and hide'],a:'hide and seek',
+ expl:'Hide and seek = cache-cache. To seek = chercher (passé : sought).'},
+{id:'v32',cat:'vocab',type:'qcm',q:'« Fondre » se dit…',choices:['to melt','to fade','to mold','to fund'],a:'to melt',
+ expl:'To melt = fondre (glace, chocolat, fromage…). To fade = s\'estomper, devenir transparent.'},
+{id:'v33',cat:'vocab',type:'qcm',q:'« To shiver », c\'est…',choices:['trembler (de froid)','frissonner de plaisir','shooter','transpirer'],a:'trembler (de froid)',
+ expl:'To shiver = trembler, frissonner (souvent de froid). "I was shivering while it was snowing."'},
+{id:'v34',cat:'vocab',type:'qcm',q:'« Christmas Eve », c\'est…',choices:['le lendemain de Noël','la veille de Noël','le soir de Noël','la messe de Noël'],a:'la veille de Noël',
+ expl:'Eve = la veille. Christmas Eve = 24 décembre, New Year\'s Eve = 31 décembre.'},
+{id:'v35',cat:'vocab',type:'qcm',q:'« Gear » peut vouloir dire…',choices:['équipement, engrenage, vitesses (voiture)','uniquement engrenage','la guerre','le blé'],a:'équipement, engrenage, vitesses (voiture)',
+ expl:'Gear = l\'équipement (hiking gear), un engrenage, ou les vitesses d\'une voiture (change gear).'},
+{id:'v36',cat:'vocab',type:'qcm',q:'« Écouteurs filaires » se dit…',choices:['wired earbuds','wireless earbuds','cabled ears','string earphones'],a:'wired earbuds',
+ expl:'Wired = filaire (wire = fil). Wireless = sans fil.'},
+{id:'v37',cat:'vocab',type:'qcm',q:'« To cease », c\'est…',choices:['saisir','cesser','sceller','viser'],a:'cesser',
+ expl:'To cease = cesser (formel). "Cease fire!" = Cessez le feu !'},
+{id:'v38',cat:'vocab',type:'qcm',q:'« Salaire » (souvent horaire) se dit…',choices:['wage','wedge','won','worth'],a:'wage',
+ expl:'Wage = salaire (souvent horaire), salary = salaire mensuel/annuel. The wage gap = l\'écart de salaires.'},
+{id:'v39',cat:'vocab',type:'qcm',q:'« La TVA » se dit…',choices:['TVA','VAT','TAV','ATV'],a:'VAT',
+ expl:'VAT = Value Added Tax = la TVA.'},
+{id:'v40',cat:'vocab',type:'qcm',q:'« Une randonnée », c\'est…',choices:['a hike','a ride','a walkabout','a trek race'],a:'a hike',
+ expl:'A hike = une randonnée, to hike / hiking = randonner. "We went on a hike."'},
+{id:'v41',cat:'vocab',type:'qcm',q:'« Une carence en fer » se dit…',choices:['an iron deficiency','an iron default','a fer deficiency','an iron miss'],a:'an iron deficiency',
+ expl:'Deficiency = carence. Iron = le fer (et le fer à repasser !). Sans vitamine C : scurvy = le scorbut.'},
+{id:'v42',cat:'vocab',type:'qcm',q:'« Swollen » veut dire…',choices:['avalé','gonflé','trempé','endormi'],a:'gonflé',
+ expl:'Swollen = gonflé (to swell = gonfler). "My ankle is swollen." Avalé = swallowed, trempé = soaked.'},
+{id:'v43',cat:'vocab',type:'qcm',q:'« A fine », c\'est…',choices:['une amende','une fin','la ligne d\'arrivée','un compliment'],a:'une amende',
+ expl:'A fine = une amende. "I got a fine" = j\'ai eu une amende. (Fine = aussi « bien » : I\'m fine.)'},
+{id:'v44',cat:'vocab',type:'qcm',q:'« Abat-jour / plafonnier » se dit…',choices:['lampshade','lamppost','lampcover','shadowlamp'],a:'lampshade',
+ expl:'Lampshade = abat-jour (shade = ombre). Lamp post = lampadaire (dans la rue).'},
+{id:'v45',cat:'vocab',type:'qcm',q:'« Grasshopper », c\'est…',choices:['une tondeuse','une sauterelle','un criquet-tueur','un jardinier'],a:'une sauterelle',
+ expl:'Grasshopper = sauterelle, littéralement « sauteuse d\'herbe » (grass + to hop = sautiller).'},
+{id:'v46',cat:'vocab',type:'qcm',q:'« Parmi » se dit…',choices:['among','while','between (toujours)','aside'],a:'among',
+ expl:'Among = parmi (plus de deux éléments). Between = entre deux.'},
+{id:'v47',cat:'vocab',type:'qcm',q:'« L\'essuie-tout », c\'est…',choices:['kitchen roll','toilet roll','wipe-all','dry paper'],a:'kitchen roll',
+ expl:'Kitchen roll (UK) / paper towels (US) = essuie-tout. Toilet roll = papier toilette. A roll = un rouleau.'},
+{id:'v48',cat:'vocab',type:'qcm',q:'« Faire une sieste » se dit…',choices:['to take a nap','to make a sleep','to take a snooze bed','to do a nap'],a:'to take a nap',
+ expl:'A nap = une sieste, to take a nap = faire une sieste.'},
+{id:'v49',cat:'vocab',type:'qcm',q:'« To dig », c\'est…',choices:['plonger','creuser','enterrer','pointer'],a:'creuser',
+ expl:'To dig = creuser (passé : dug). D\'où gold digger = personne qui cherche un(e) partenaire riche.'},
+{id:'v50',cat:'vocab',type:'qcm',q:'« Le bien-être » se dit…',choices:['well-being','good-being','wellness-life','best-being'],a:'well-being',
+ expl:'Well-being = le bien-être. "…with consequences for the well-being of their kid."'},
+{id:'v51',cat:'vocab',type:'qcm',q:'« Homard » se dit…',choices:['lobster','crab','shrimp','oyster'],a:'lobster',
+ expl:'Lobster = homard. Crab = crabe, shrimp = crevette, oyster = huître.'},
+{id:'v52',cat:'vocab',type:'qcm',q:'« Belly », c\'est…',choices:['le ventre','le dos','la poitrine','le nombril'],a:'le ventre',
+ expl:'Belly (ou tummy, plus enfantin) = le ventre. "I have a belly ache" = j\'ai mal au ventre.'},
+{id:'v53',cat:'vocab',type:'qcm',q:'« Frowned upon » veut dire…',choices:['adoré par tous','mal vu (par les gens)','froncé','interdit par la loi'],a:'mal vu (par les gens)',
+ expl:'Frowned upon = mal vu socialement (to frown = froncer les sourcils). "It\'s frowned upon" = c\'est mal vu.'},
+{id:'v54',cat:'vocab',type:'qcm',q:'« Soaked » veut dire…',choices:['trempé','sec','savonné','essoré'],a:'trempé',
+ expl:'Soaked = trempé. "He should have brought his umbrella, now he\'s soaked."'},
+{id:'v55',cat:'vocab',type:'qcm',q:'« Belle-sœur » se dit…',choices:['beautiful sister','sister-in-law','step-sister (toujours)','half sister'],a:'sister-in-law',
+ expl:'Sister-in-law = belle-sœur (par mariage). Step-sister = demi-sœur par remariage, half-sister = demi-sœur de sang.'},
+{id:'v56',cat:'vocab',type:'qcm',q:'« S\'évanouir » se dit…',choices:['to faint','to fade','to fall','to vanish'],a:'to faint',
+ expl:'To faint = s\'évanouir. "She fainted." To fade = s\'estomper, to vanish = disparaître.'},
+{id:'v57',cat:'vocab',type:'qcm',q:'« Trajet » vs « voyage » :',choices:['journey = voyage, trip = trajet','journey = trajet, trip = voyage','les deux = voyage','les deux = trajet'],a:'journey = trajet, trip = voyage',
+ expl:'Journey = le trajet (domicile-travail : my journey to work). Trip = le voyage (a trip to Spain).'},
+{id:'v58',cat:'vocab',type:'fill',q:'Le pluriel de « cactus » est : one cactus, two ___',a:['cacti','cactuses'],
+ expl:'Cactus → cacti (pluriel latin, comme dans votre carnet). "Cactuses" est aussi accepté en anglais courant.'},
+{id:'v59',cat:'vocab',type:'fill',q:'Le pluriel de « child » est : one child, two ___',a:['children'],
+ expl:'Child → children : pluriel irrégulier. (One kid, two kids en revanche est régulier.)'},
+{id:'v60',cat:'vocab',type:'qcm',q:'« Rendez-vous médical » se dit…',choices:['a meeting','an appointment','a date','a rendezvous'],a:'an appointment',
+ expl:'Appointment = rdv médical/administratif, meeting = rdv professionnel, date = rdv amoureux 💙.'},
+{id:'v61',cat:'vocab',type:'qcm',q:'« Néanmoins » se dit…',choices:['nevertheless','otherwise','anyway','moreover'],a:'nevertheless',
+ expl:'Nevertheless (ou however) = néanmoins. Otherwise = sinon, anyway = de toute façon / quand même.'},
+{id:'v62',cat:'vocab',type:'qcm',q:'« Somehow » veut dire…',choices:['quelque part','d\'une manière ou d\'une autre (on ne sait pas comment)','de toute façon','n\'importe comment'],a:'d\'une manière ou d\'une autre (on ne sait pas comment)',
+ expl:'Somehow = d\'une certaine manière, inconnue. "Somehow, it worked." = Ça a marché, on ne sait pas trop comment.'},
+{id:'v63',cat:'vocab',type:'qcm',q:'« Une peluche » (le jouet) se dit…',choices:['a plushie / a teddy','a bobble','a fluffy','a pelush'],a:'a plushie / a teddy',
+ expl:'Teddy (bear), plush ou plushie = peluche. A bobble = la boulette sur les vêtements, ou l\'élastique à cheveux (hair bobble) !'},
+{id:'v64',cat:'vocab',type:'qcm',q:'« Démarche » (façon de marcher) se dit…',choices:['gate','gait','walk-style','march'],a:'gait',
+ expl:'Gait = la démarche physique. Gate (avec E) = le portail. Même prononciation !'},
+{id:'v65',cat:'vocab',type:'qcm',q:'« Économies » (argent mis de côté) se dit…',choices:['savings','economies','spares','moneys'],a:'savings',
+ expl:'Savings = les économies (to save = économiser). Economy = l\'économie d\'un pays.'},
+{id:'v66',cat:'vocab',type:'qcm',q:'« La comptabilité » se dit…',choices:['accountability','accounting','counting','accountancy-ship'],a:'accounting',
+ expl:'Accounting (ou accountancy) = la comptabilité. Attention : accountability = le fait d\'assumer ses responsabilités !'},
+{id:'v67',cat:'vocab',type:'qcm',q:'« Sinon » se dit…',choices:['otherwise','elsewhere','somehow','nevertheless'],a:'otherwise',
+ expl:'Otherwise = sinon / autrement. "Otherwise, we can give up." = Sinon, on peut abandonner.'},
+{id:'v68',cat:'vocab',type:'qcm',q:'« Se moquer / que ça te plaise ou non » : « Whether you like it ___ »',choices:['or not','or no','either not','and not'],a:'or not',
+ expl:'Whether you like it or not = que ça te plaise ou non. Whether = si (oui ou non).'},
+{id:'v69',cat:'vocab',type:'qcm',q:'« Rarement » se dit…',choices:['rarely / seldom','hardly ever seulement','sometimes','scarcely jamais'],a:'rarely / seldom',
+ expl:'Rarely = seldom = rarement. Sometimes = parfois, often = souvent, always = toujours.'},
+{id:'v70',cat:'vocab',type:'qcm',q:'« Écoute-moi bien (j\'ai un plan) » se dit…',choices:['Listen me out','Hear me out','Ear me','Listen out me'],a:'Hear me out',
+ expl:'Hear me out = écoute-moi jusqu\'au bout (souvent pour un plan un peu fou 😈). Sinon : listen = écouter, hear = entendre.'},
+
+/* ---------- CONJUGAISON ---------- */
+{id:'c1',cat:'conj',type:'fill',q:'My brother usually ___ (take) the bus to school.',a:['takes'],
+ expl:'Présent simple (habitude) + 3e personne du singulier → verbe + s : he takes.'},
+{id:'c2',cat:'conj',type:'fill',q:'We ___ (not like) waking up early on Mondays.',a:['don\'t like','do not like'],
+ expl:'Négation au présent simple : do/does + not + verbe. We don\'t like.'},
+{id:'c3',cat:'conj',type:'fill',q:'What time ___ your English class start?',a:['does'],
+ expl:'Question au présent simple, 3e personne → does. Le verbe reste à la base : does… start (pas starts).'},
+{id:'c4',cat:'conj',type:'fill',q:'Look! It ___ (rain) outside.',a:['is raining','\'s raining'],
+ expl:'« Look! » = ça se passe maintenant → présent continu : is + verbe-ing.'},
+{id:'c5',cat:'conj',type:'fill',q:'I can\'t talk now, I ___ (do) my homework.',a:['am doing','\'m doing'],
+ expl:'Action en cours → présent continu : I am doing.'},
+{id:'c6',cat:'conj',type:'fill',q:'They ___ (prepare) dinner in the kitchen right now.',a:['are preparing'],
+ expl:'Action en cours → présent continu : are + preparing.'},
+{id:'c7',cat:'conj',type:'fill',q:'Yesterday, I ___ (forget) my keys at home.',a:['forgot'],
+ expl:'Yesterday → past simple. Forget est irrégulier : forget → forgot → forgotten.'},
+{id:'c8',cat:'conj',type:'fill',q:'We ___ (visit) my grandparents last weekend.',a:['visited'],
+ expl:'Last weekend → past simple. Verbe régulier : visited.'},
+{id:'c9',cat:'conj',type:'fill',q:'She ___ (not see) the message.',a:['didn\'t see','did not see'],
+ expl:'Négation au passé : did not + base verbale. On dit didn\'t see, jamais "didn\'t saw" !'},
+{id:'c10',cat:'conj',type:'fill',q:'I ___ (walk) to school when it started to snow.',a:['was walking'],
+ expl:'Action en cours dans le passé, interrompue par une autre → past continuous : was walking.'},
+{id:'c11',cat:'conj',type:'fill',q:'They ___ (watch) a movie while I was cooking.',a:['were watching'],
+ expl:'Deux actions simultanées dans le passé → past continuous des deux côtés : were watching / was cooking.'},
+{id:'c12',cat:'conj',type:'fill',q:'What were you ___ (do) at 8 p.m. yesterday?',a:['doing'],
+ expl:'Past continuous : were + verbe-ing → What were you doing?'},
+{id:'c13',cat:'conj',type:'fill',q:'I ___ never ___ (try) sushi before. (2 mots : auxiliaire + participe)',a:['have tried','have ever tried'],
+ expl:'Expérience de vie, sans date précise → present perfect : have + participe passé. I have never tried.'},
+{id:'c14',cat:'conj',type:'fill',q:'She ___ (lose) her phone again! (present perfect)',a:['has lost'],
+ expl:'Conséquence présente (le téléphone est perdu maintenant) → present perfect : has lost.'},
+{id:'c15',cat:'conj',type:'fill',q:'We ___ (live) in this town for five years.',a:['have lived','have been living'],
+ expl:'Depuis 5 ans et toujours vrai → present perfect : have lived (for + durée).'},
+{id:'c16',cat:'conj',type:'fill',q:'I think it ___ (be) sunny tomorrow.',a:['will be','\'ll be'],
+ expl:'Prédiction → futur avec will : it will be sunny.'},
+{id:'c17',cat:'conj',type:'fill',q:'Be careful! You ___ (drop) your bag!',a:['will drop','\'ll drop','are going to drop'],
+ expl:'Le futur immédiat qu\'on voit venir : will drop, ou mieux "are going to drop" (c\'est imminent et visible).'},
+{id:'c18',cat:'conj',type:'fill',q:'I had been ___ (wait) for the bus for 20 minutes when it finally arrived.',a:['waiting'],
+ expl:'Past perfect continuous : had been + verbe-ing → une action qui durait avant un événement passé.'},
+{id:'c19',cat:'conj',type:'fill',q:'She was tired because she had ___ (study) all night.',a:['studied','been studying'],
+ expl:'Antériorité dans le passé → past perfect : had studied ("plus-que-parfait" : elle avait étudié).'},
+{id:'c20',cat:'conj',type:'fill',q:'If I had known, I ___ (tell) you earlier. (3 mots)',a:['would have told','would\'ve told'],
+ expl:'Hypothèse passée : If + past perfect → would have + participe passé. Comme dans votre carnet !'},
+{id:'c21',cat:'conj',type:'fill',q:'They ___ (go) to the concert, but the tickets were too expensive. (3 mots)',a:['would have gone','would\'ve gone'],
+ expl:'Regret sur le passé → would have + participe passé : would have gone (go → went → gone).'},
+{id:'c22',cat:'conj',type:'fill',q:'If it were sunny today, we ___ (play) football outside. (2 mots)',a:['would play','could play'],
+ expl:'Hypothèse présente irréelle : If + prétérit → would + base verbale. "If it WERE" : be prend were à toutes les personnes ici.'},
+{id:'c23',cat:'conj',type:'fill',q:'If I could, I ___ (travel) around the world. (2 mots)',a:['would travel'],
+ expl:'Hypothèse présente : If + passé (could) → would + verbe : I would travel.'},
+{id:'c24',cat:'conj',type:'fill',q:'By the time we arrived, the movie had already ___ (start).',a:['started'],
+ expl:'Past perfect : had + participe passé → le film avait déjà commencé avant notre arrivée.'},
+{id:'c25',cat:'conj',type:'fill',q:'He ___ (bring) his umbrella, now he\'s soaked! (should + 2 mots)',a:['should have brought','should\'ve brought'],
+ expl:'Reproche sur le passé : should have + participe passé. Bring → brought → brought.'},
+{id:'c26',cat:'conj',type:'fill',q:'If she had studied more, she ___ (pass) the exam. (3 mots)',a:['would have passed','could have passed'],
+ expl:'If + past perfect → would/could have + participe passé : elle aurait réussi l\'examen.'},
+{id:'c27',cat:'conj',type:'fill',q:'I would rather ___ (stay) home tonight than go to the party.',a:['stay'],
+ expl:'Would rather + base verbale sans "to" : I\'d rather stay. Jamais "would rather to stay".'},
+{id:'c28',cat:'conj',type:'fill',q:'They might have ___ (forget) the meeting, they\'re very late.',a:['forgotten'],
+ expl:'Might have + participe passé : forget → forgot → forgotten. "Ils ont peut-être oublié."'},
+{id:'c29',cat:'conj',type:'fill',q:'If you had asked me, I ___ (help) you. (3 mots)',a:['would have helped','would\'ve helped'],
+ expl:'Hypothèse passée : If + past perfect → would have helped.'},
+{id:'c30',cat:'conj',type:'fill',q:'She had been ___ (practise) piano before the competition started.',a:['practising','practicing'],
+ expl:'Past perfect continuous : had been + verbe-ing → elle s\'entraînait depuis un moment avant.'},
+{id:'c31',cat:'conj',type:'fill',q:'If I had known, I ___ (come) to see you. (3 mots)',a:['would have come','would\'ve come'],
+ expl:'La phrase du carnet ! If + past perfect → would have come. Come → came → come.'},
+{id:'c32',cat:'conj',type:'fill',q:'If he knew, he ___ (come) to see you. (2 mots)',a:['would come'],
+ expl:'Hypothèse PRÉSENTE cette fois : If + prétérit (knew) → would + base verbale : would come.'},
+{id:'c33',cat:'conj',type:'fill',q:'If we leave now, we ___ (arrive) on time. (2 mots)',a:['will arrive','can arrive','could arrive'],
+ expl:'Condition réelle (ça peut vraiment arriver) : If + présent → will/can + verbe. Pas de would ici !'},
+{id:'c34',cat:'conj',type:'qcm',q:'« I had been tired » se traduit…',choices:['J\'étais fatigué','J\'avais été fatigué','J\'ai été fatigué','Je serais fatigué'],a:'J\'avais été fatigué',
+ expl:'Had been = past perfect = « avais été ». I was tired = j\'étais, I have been tired = j\'ai été.'},
+{id:'c35',cat:'conj',type:'qcm',q:'Quel temps pour « Ils auront lâché le ballon » ?',choices:['They will drop the ball','They will have dropped the ball','They would drop the ball','They had dropped the ball'],a:'They will have dropped the ball',
+ expl:'Futur antérieur = future perfect : will have + participe passé.'},
+{id:'c36',cat:'conj',type:'qcm',q:'« I have gone » vs « I went » :',choices:['identiques','I have gone = lien avec le présent, I went = passé daté/terminé','I went est plus poli','I have gone = futur'],a:'I have gone = lien avec le présent, I went = passé daté/terminé',
+ expl:'Present perfect (have gone) : conséquence maintenant ou expérience. Past simple (went) : moment passé précis et fini (yesterday, last week…).'},
+{id:'c37',cat:'conj',type:'fill',q:'Le passé de « to seek » (chercher) : Yesterday, the police ___ a suspect.',a:['sought'],
+ expl:'Seek → sought → sought. Comme dans le titre de la BBC : "prosecutors sought a one-year jail term".'},
+{id:'c38',cat:'conj',type:'fill',q:'Le passé de « to choose » : Yesterday, she ___ the blue dress.',a:['chose'],
+ expl:'Choose (présent, "tchouze") → chose (passé, "tchooze") → chosen. Un seul o au passé !'},
+
+/* ---------- TRADUCTION ---------- */
+{id:'t1',cat:'trad',type:'order',q:'« J\'étais au marché »',a:'I was at the market',extra:['were','am'],
+ expl:'Prétérit de be : I was. « Au marché » = at the market.'},
+{id:'t2',cat:'trad',type:'order',q:'« Il avait un chat »',a:'He had a cat',extra:['has','have'],
+ expl:'« Avait » = past simple : had.'},
+{id:'t3',cat:'trad',type:'order',q:'« Il avait vu un chat »',a:'He had seen a cat',extra:['saw','sawed'],
+ expl:'Plus-que-parfait = past perfect : had + participe passé. See → saw → seen.'},
+{id:'t4',cat:'trad',type:'write',q:'« Il avait eu un chat »',a:['He had had a cat','He\'d had a cat'],
+ expl:'Oui, deux "had" de suite ! had (auxiliaire) + had (participe passé de have) : He had had a cat.'},
+{id:'t5',cat:'trad',type:'order',q:'« Demain, on ira dehors »',a:'Tomorrow we will go outside',extra:['going','went'],
+ expl:'Futur simple : will + base verbale. Outside = dehors.'},
+{id:'t6',cat:'trad',type:'order',q:'« Elle verra le ciel »',a:'She will see the sky',extra:['sees','saw'],
+ expl:'Will + see. Pas de -s après will !'},
+{id:'t7',cat:'trad',type:'order',q:'« Nous saurons quoi faire »',a:'We will know what to do',extra:['known','knew'],
+ expl:'Will know = saurons. « Quoi faire » = what to do.'},
+{id:'t8',cat:'trad',type:'order',q:'« Ils auront vu un chat »',a:'They will have seen a cat',extra:['saw','had'],
+ expl:'Futur antérieur : will have + participe passé → will have seen.'},
+{id:'t9',cat:'trad',type:'write',q:'« Si j\'avais su, je ne serais pas venu »',a:['If I had known, I wouldn\'t have come','If I had known, I would not have come','If I\'d known, I wouldn\'t have come','If I\'d known, I would not have come'],
+ expl:'La star de votre carnet 🙂 : If + past perfect (had known) → would (not) have + participe passé (come).'},
+{id:'t10',cat:'trad',type:'order',q:'« Tu sauras comment l\'aider » (une personne, genre inconnu)',a:'You will know how to help them',extra:['him','it'],
+ expl:'Them peut être un singulier neutre en anglais : parfait quand on ne connaît pas le genre de la personne.'},
+{id:'t11',cat:'trad',type:'order',q:'« Ils étaient silencieux »',a:'They were quiet',extra:['was','silence'],
+ expl:'They were + quiet (ou silent). Was = singulier, were = pluriel.'},
+{id:'t12',cat:'trad',type:'order',q:'« On mangera des pommes »',a:'We will eat apples',extra:['ate','eaten'],
+ expl:'Will + eat. « Des pommes » en général : pas d\'article → apples.'},
+{id:'t13',cat:'trad',type:'order',q:'« On aura mangé des pommes »',a:'We will have eaten apples',extra:['ate','eat'],
+ expl:'Futur antérieur : will have + eaten (eat → ate → eaten).'},
+{id:'t14',cat:'trad',type:'order',q:'« Elle était allée au marché »',a:'She had gone to the market',extra:['went','was'],
+ expl:'« Était allée » = past perfect : had gone. (She went = elle est allée / elle alla.)'},
+{id:'t15',cat:'trad',type:'order',q:'« Il pleut » (en ce moment)',a:'It is raining',extra:['rains','rain'],
+ expl:'Il pleut là, maintenant → présent continu : It is raining. ("It rains" = il pleut en général, habitude.)'},
+{id:'t16',cat:'trad',type:'order',q:'« Demain, il pleuvra »',a:'Tomorrow it will rain',extra:['rains','raining'],
+ expl:'Will + base verbale : it will rain.'},
+{id:'t17',cat:'trad',type:'order',q:'« Pendant que je faisais la vaisselle, il mangeait les restes »',a:'While I was doing the dishes he was eating the leftovers',extra:['during','ate'],
+ expl:'While + past continuous des deux côtés. While = pendant que (+ phrase), during = pendant (+ nom). Leftovers = les restes.'},
+{id:'t18',cat:'trad',type:'write',q:'« Si seulement tu savais… »',a:['If only you knew'],
+ expl:'If only + prétérit : If only you knew. (Regret présent → verbe au passé.)'},
+{id:'t19',cat:'trad',type:'order',q:'« Le printemps va arriver »',a:'Spring is going to come',extra:['the','will'],
+ alt:['Spring will come'],
+ expl:'Pas d\'article devant les saisons en général : Spring, pas "the spring". Futur proche is going to come, ou futur simple will come : les deux sont acceptés.'},
+{id:'t20',cat:'trad',type:'write',q:'« Actuellement, je mange »',a:['Currently, I am eating','Currently I am eating','Currently, I\'m eating'],
+ expl:'Piège classique ! Actuellement = currently. Actually = « en fait ». Et action en cours → présent continu.'},
+{id:'t21',cat:'trad',type:'write',q:'« Je ne suis pas d\'accord »',a:['I disagree','I don\'t agree','I do not agree'],
+ expl:'Agree est un VERBE : I agree / I disagree. Jamais "I am agree" ni "I am not agree" !'},
+{id:'t22',cat:'trad',type:'write',q:'« Elle était d\'accord »',a:['She agreed'],
+ expl:'Agree = verbe → au passé : She agreed. (Pas "she was agree".)'},
+{id:'t23',cat:'trad',type:'write',q:'« D\'une manière ou d\'une autre (on ne sait pas comment), ça a marché » (commence par S…)',a:['Somehow, it worked','Somehow it worked','Somehow, it has worked','Somehow it has worked'],
+ expl:'Somehow = d\'une manière inconnue, en un seul mot. Somehow, it worked.'},
+{id:'t24',cat:'trad',type:'order',q:'« La semaine prochaine, il y aura du tonnerre »',a:'Next week there will be thunder',extra:['lightning','have'],
+ expl:'« Il y aura » = there will be. Thunder = tonnerre (lightning = éclair).'},
+{id:'t25',cat:'trad',type:'write',q:'« Il avait eu une bonne idée »',a:['He had had a good idea','He\'d had a good idea'],
+ expl:'Encore le double had : He had had a good idea. Le premier had = auxiliaire, le second = participe passé de have.'},
+{id:'t26',cat:'trad',type:'order',q:'« Elle aura toujours beaucoup de plantes »',a:'She will always have many plants',extra:['much','always will'],
+ expl:'Plants se compte → many (pas much). Always se place entre will et le verbe.'},
+{id:'t27',cat:'trad',type:'write',q:'« Ses affaires ne sont pas les miennes » (à eux/elle+lui)',a:['Their stuff isn\'t mine','Their stuff is not mine'],
+ expl:'Stuff est TOUJOURS singulier : their stuff IS. Les miennes = mine (tout seul, sans nom derrière).'},
+{id:'t28',cat:'trad',type:'order',q:'« Sans lunettes, il avait du mal à voir »',a:'Without glasses he struggled to see',extra:['watched','glass'],
+ expl:'To struggle to + verbe = avoir du mal à. Glasses (pluriel) = les lunettes.'},
+{id:'t29',cat:'trad',type:'write',q:'« Ce sac, c\'est le leur »',a:['This bag is theirs','This bag, it\'s theirs','This bag it is theirs','That bag is theirs'],
+ expl:'Le leur = theirs (sans nom derrière). Their bag = leur sac, mais this bag is theirs.'},
+{id:'t30',cat:'trad',type:'write',q:'« Tu me manques »',a:['I miss you'],
+ expl:'Inversion totale ! En anglais, c\'est CELUI QUI RESSENT le manque qui est sujet : I miss you. ("You miss me" = je te manque.)'},
+{id:'t31',cat:'trad',type:'write',q:'« J\'avais beaucoup de chats »',a:['I had many cats','I had a lot of cats','I had lots of cats'],
+ expl:'Les chats se comptent → many (ou a lot of). Much = pour l\'indénombrable (much water, much soup).'},
+{id:'t32',cat:'trad',type:'write',q:'« J\'avais eu beaucoup de soupe »',a:['I had had much soup','I had had a lot of soup','I\'d had a lot of soup','I\'d had much soup'],
+ expl:'Double had + soupe non comptable → much (ou a lot of) soup. "Many soups" voudrait dire plusieurs soupes différentes !'},
+{id:'t33',cat:'trad',type:'order',q:'« Pendant qu\'il pleuvait, je cuisinais »',a:'While it was raining I was cooking',extra:['during','rained'],
+ expl:'While + past continuous. Deux actions en parallèle dans le passé.'},
+{id:'t34',cat:'trad',type:'write',q:'« Dans trois semaines, j\'aurai mon permis »',a:['In three weeks I will have my driving licence','In three weeks, I will have my driving licence','In three weeks I will have my driver\'s license','In three weeks, I will have my driver\'s license','In three weeks I\'ll have my driving licence'],
+ expl:'« Dans trois semaines » = in three weeks. Permis : driving licence (UK) / driver\'s license (US).'},
+{id:'t35',cat:'trad',type:'order',q:'« Ils ont traversé la forêt (à pied) »',a:'They walked through the forest',extra:['crossed by','among'],
+ expl:'Through = à travers. To walk through = traverser à pied. (Across marche aussi.)'},
+{id:'t36',cat:'trad',type:'order',q:'« Pendant la Première Guerre mondiale, des millions de gens ont perdu la vie »',a:'During World War One millions of people lost their lives',extra:['While','life'],
+ expl:'During + nom (la guerre), while + phrase. Et "their lives" au pluriel : chacun a une vie !'},
+{id:'t37',cat:'trad',type:'write',q:'« J\'ai du mal à réfléchir »',a:['I have trouble thinking','I struggle to think','I have a hard time thinking'],
+ expl:'To have trouble + verbe-ing : I have trouble thinking. (Ou I struggle to think.)'},
+{id:'t38',cat:'trad',type:'write',q:'« Le beau temps me manque »',a:['I miss the nice weather','I miss the good weather'],
+ expl:'Comme « tu me manques » : on inverse ! I miss the nice weather. C\'est moi qui ressens le manque → je suis le sujet.'},
+{id:'t39',cat:'trad',type:'order',q:'« Il est prédit qu\'il pleuvra pendant trois années entières »',a:'It is predicted that it will rain for three entire years',extra:['during','predicted it'],
+ expl:'It is predicted that… = il est prédit que. For + durée (for three years). Entire = entier.'},
+{id:'t40',cat:'trad',type:'order',q:'« Il y a eu une augmentation du taux de production »',a:'There has been an increase of the production rate',extra:['there was being','decrease'],
+ expl:'There has been = il y a eu (avec effet présent). Increase = augmentation, decrease = diminution, rate = taux.'},
+{id:'t41',cat:'trad',type:'write',q:'« On a prévu d\'aller à la plage » (planifié)',a:['We have planned to go to the beach','We planned to go to the beach','We\'ve planned to go to the beach'],
+ expl:'Prévoir/planifier = to plan. On a prévu = we have planned. (Prédire la météo = to predict !)'},
+{id:'t42',cat:'trad',type:'order',q:'« À quel âge as-tu arrêté de croire au Père Noël ? »',a:'At what age did you stop believing in Santa',extra:['stopped','to believe'],
+ expl:'Question au passé : did + base verbale (stop, pas stopped). Stop + verbe-ing = arrêter de faire.'},
+{id:'t43',cat:'trad',type:'write',q:'« Je n\'y croyais pas »',a:['I didn\'t believe it','I did not believe it','I didn\'t believe in it'],
+ expl:'Believe = croire. I didn\'t believe it. (Faire confiance à quelqu\'un = to trust someone.)'},
+{id:'t44',cat:'trad',type:'write',q:'« Je ne pense pas » (réponse à une question)',a:['I don\'t think so','I do not think so'],
+ expl:'I don\'t think SO = je ne pense pas (que ce soit le cas). "I don\'t think" tout court = je ne pense jamais 🤖 !'},
+{id:'t45',cat:'trad',type:'order',q:'« Le processus consiste à aller au nord puis activer la machine »',a:'The process consists in going north then activating the machine',extra:['to go','activate'],
+ expl:'To consist in + verbe-ing : consists in going… then activating. Après une préposition, le verbe prend -ing.'},
+
+/* ---------- GRAMMAIRE ---------- */
+{id:'g1',cat:'gram',type:'qcm',q:'I have ___ cats. (beaucoup)',choices:['much','many','a few of','more'],a:'many',
+ expl:'Cats se compte (1 cat, 2 cats) → many. Much = indénombrable (much water). A lot of marche pour les deux !'},
+{id:'g2',cat:'gram',type:'qcm',q:'There isn\'t ___ soup left. (beaucoup)',choices:['many','much','lots','several'],a:'much',
+ expl:'Soup ne se compte pas → much. Many = dénombrable (many cats).'},
+{id:'g3',cat:'gram',type:'qcm',q:'Quel mot marche avec le dénombrable ET l\'indénombrable ?',choices:['much','many','a lot of','few'],a:'a lot of',
+ expl:'A lot of = beaucoup de, pour tout : a lot of cats, a lot of soup. Le joker parfait quand on hésite !'},
+{id:'g4',cat:'gram',type:'qcm',q:'« Tu me manques » se dit…',choices:['You miss me','I miss you','You lack me','I am missing to you'],a:'I miss you',
+ expl:'Le verbe s\'inverse : celui qui ressent le manque devient le sujet. I miss you = tu me manques.'},
+{id:'g5',cat:'gram',type:'qcm',q:'___ you like it or not, we\'re going.',choices:['If','Whether','Either','Even'],a:'Whether',
+ expl:'Whether… or not = que… ou non. "Whether you like it or not" = que ça te plaise ou non.'},
+{id:'g6',cat:'gram',type:'qcm',q:'We\'ll be late ___ we leave now.',choices:['if','unless','whether','otherwise'],a:'unless',
+ expl:'Unless = à moins que / sauf si. "Unless we leave now" = à moins qu\'on parte maintenant.'},
+{id:'g7',cat:'gram',type:'qcm',q:'I\'d rather ___ home tonight.',choices:['to stay','staying','stay','stayed'],a:'stay',
+ expl:'Would rather + base verbale directe, sans "to" : I\'d rather stay.'},
+{id:'g8',cat:'gram',type:'qcm',q:'« Le bonheur est important » :',choices:['The happiness is important','Happiness is important','A happiness is important','Happiness are important'],a:'Happiness is important',
+ expl:'Pas de "the" devant un concept général ! The = seulement quand on peut pointer quelque chose de précis/physique. Et un concept reste au singulier.'},
+{id:'g9',cat:'gram',type:'qcm',q:'If I ___ rich, I would travel the world.',choices:['am','was (uniquement)','were','will be'],a:'were',
+ expl:'Hypothèse irréelle : if + prétérit, et be devient were à toutes les personnes : If I were you… (was s\'entend à l\'oral, mais were est la forme correcte).'},
+{id:'g10',cat:'gram',type:'qcm',q:'Complète la règle du carnet : If + past perfect → …',choices:['will + verbe','would + verbe','would have + participe passé','had + participe passé'],a:'would have + participe passé',
+ expl:'Hypothèse sur le PASSÉ : If I had known, I would have come. (Hypothèse présente : if + prétérit → would + verbe.)'},
+{id:'g11',cat:'gram',type:'qcm',q:'« Shall », c\'est…',choices:['un synonyme soutenu de will','le passé de should','une obligation','un conditionnel'],a:'un synonyme soutenu de will',
+ expl:'Shall = will en plus formel/poli (UK) : "Shall we dance?" = On danse ?'},
+{id:'g12',cat:'gram',type:'qcm',q:'___ the war, millions of people lost their lives.',choices:['While','During','Meanwhile','Whereas'],a:'During',
+ expl:'During + nom (during the war). While + phrase avec sujet et verbe (while I was cooking).'},
+{id:'g13',cat:'gram',type:'qcm',q:'Can you ___ me your pen, please?',choices:['borrow','lend','loan me to','rent'],a:'lend',
+ expl:'To lend = prêter (je donne), to borrow = emprunter (je prends). Can you lend me your pen? / Can I borrow your pen?'},
+{id:'g14',cat:'gram',type:'qcm',q:'Can I ___ your pen, please?',choices:['lend','borrow','prête','lend me'],a:'borrow',
+ expl:'C\'est moi qui prends → borrow. He will borrow his cookbook / He deserves to be lent this book.'},
+{id:'g15',cat:'gram',type:'qcm',q:'She ___ me English every week.',choices:['learns','teaches','learn','studies me'],a:'teaches',
+ expl:'To teach = enseigner (le prof), to learn = apprendre (l\'élève). She teaches me, I learn from her.'},
+{id:'g16',cat:'gram',type:'qcm',q:'I work hard to ___ money.',choices:['win','earn','gain','won'],a:'earn',
+ expl:'Earn = gagner en travaillant/méritant. Win = gagner un jeu, un match, la loterie (pas mérité par le travail !).'},
+{id:'g17',cat:'gram',type:'qcm',q:'Did you ___ that noise?',choices:['listen','hear','listen to','sound'],a:'hear',
+ expl:'Hear = entendre (involontaire), listen (to) = écouter (volontaire). On entend un bruit : hear.'},
+{id:'g18',cat:'gram',type:'qcm',q:'___ at this photo!',choices:['See','Watch','Look','Stare'],a:'Look',
+ expl:'Look (at) = regarder (poser les yeux), watch = observer ce qui bouge (un film), see = voir (involontaire).'},
+{id:'g19',cat:'gram',type:'qcm',q:'Comment dire « je suis d\'accord » ?',choices:['I am agree','I agree','I am agreed','I have agree'],a:'I agree',
+ expl:'Agree est un verbe, pas un adjectif : I agree, she agreed, do you agree? Jamais "I am agree" !'},
+{id:'g20',cat:'gram',type:'qcm',q:'On parle d\'UNE personne dont on ignore le genre : « Tell ___ I said hi. »',choices:['him','her','them','it'],a:'them',
+ expl:'Them/they s\'utilise au singulier neutre pour une personne au genre inconnu. Jamais "it" pour une personne !'},
+{id:'g21',cat:'gram',type:'qcm',q:'We have lived here ___ five years.',choices:['since','for','during','from'],a:'for',
+ expl:'For + durée (for five years), since + point de départ (since 2020). "Depuis" se traduit des deux façons selon le cas.'},
+{id:'g22',cat:'gram',type:'qcm',q:'Girls have been offered the HPV jab ___ 2008.',choices:['for','since','during','from'],a:'since',
+ expl:'Since + date précise (since 2008). For + durée (for 17 years). Vu dans un titre de la BBC de vos cours !'},
+{id:'g23',cat:'gram',type:'qcm',q:'The process consists ___ activating the machine.',choices:['to','in','of to','on'],a:'in',
+ expl:'To consist in + verbe-ing. Et après toute préposition, le verbe prend -ing : consists in activating.'},
+{id:'g24',cat:'gram',type:'qcm',q:'« Stuff » (les affaires)…',choices:['est toujours pluriel','est toujours singulier','s\'accorde librement','n\'existe qu\'en anglais américain'],a:'est toujours singulier',
+ expl:'Stuff est un indénombrable, toujours singulier : my stuff IS over there. Les affaires → un seul mot, un seul verbe.'},
+{id:'g25',cat:'gram',type:'qcm',q:'« Malade » : sick ou ill ?',choices:['seulement sick','seulement ill','les deux','ni l\'un ni l\'autre'],a:'les deux',
+ expl:'Sick = ill = malade. (Sick peut aussi vouloir dire « avoir envie de vomir » ou, en argot, « génial » !)'},
+{id:'g26',cat:'gram',type:'qcm',q:'« Quand même / de toute façon », en fin de phrase :',choices:['anyway','anywhere','however','somehow'],a:'anyway',
+ expl:'Anyway se met souvent à la fin : "The children were in a good mood anyway." = quand même / de toute façon.'},
+{id:'g27',cat:'gram',type:'qcm',q:'« It\'s raining. » — le "it" désigne…',choices:['la pluie','le ciel','rien : sujet impersonnel obligatoire','le temps qu\'il fait'],a:'rien : sujet impersonnel obligatoire',
+ expl:'En anglais, il faut toujours un sujet : it pleut → IT is raining. Même pour la météo, l\'heure, la distance.'},
+{id:'g28',cat:'gram',type:'qcm',q:'Plus poli que « I want » :',choices:['I\'m on','I would like','I need','Give me'],a:'I would like',
+ expl:'I would like (I\'d like) = je voudrais : plus poli que I want. "I\'m more polite than…" disait le carnet 😉'},
+{id:'g29',cat:'gram',type:'qcm',q:'You could…, but I think you should… : quelle nuance ?',choices:['could = capacité/possibilité, should = conseil','could = obligation, should = interdiction','identiques','could = futur, should = passé'],a:'could = capacité/possibilité, should = conseil',
+ expl:'Could (can) = tu pourrais, would (will) = tu voudrais/ferais, should (shall) = tu devrais (conseil).'},
+{id:'g30',cat:'gram',type:'qcm',q:'« I\'d » peut vouloir dire…',choices:['I would uniquement','I had uniquement','I would OU I had','I did'],a:'I would OU I had',
+ expl:'\'d = would (I\'d go = j\'irais) OU had (I\'d gone = j\'étais allé). C\'est le verbe qui suit qui tranche : base verbale → would, participe passé → had.'},
+{id:'g31',cat:'gram',type:'qcm',q:'Dire à quelqu\'un « You\'re a liar », c\'est…',choices:['parfaitement poli','trop direct : pas très "etiquette"','obligatoire au Royaume-Uni','un compliment'],a:'trop direct : pas très "etiquette"',
+ expl:'Etiquette (en anglais) = les règles sociales. Accuser frontalement est mal vu : on adoucit ("That\'s not quite true…").'},
+{id:'g32',cat:'gram',type:'qcm',q:'« Whoever » veut dire…',choices:['n\'importe qui / quiconque','pourquoi','peu importe où','celui-là'],a:'n\'importe qui / quiconque',
+ expl:'Whoever = quiconque, anyone = n\'importe qui, anywhere = n\'importe où, no matter what = peu importe quoi.'},
+
+/* ---------- Ajouts du 25/08 (nouvelles notes) ---------- */
+{id:'v71',cat:'vocab',type:'qcm',q:'« To skim », c\'est…',choices:['écrémer / lire en diagonale','nager en surface','découper','sauter une ligne'],a:'écrémer / lire en diagonale',
+ expl:'To skim = écrémer (le lait), filtrer… et lire en diagonale : to skim through a text.'},
+{id:'v72',cat:'vocab',type:'qcm',q:'« Frontière » se dit…',choices:['border','boundary wall','frontline','limit'],a:'border',
+ expl:'Border = la frontière (et le bord). The French-Spanish border. À la frontière = at the border.'},
+{id:'v73',cat:'vocab',type:'qcm',q:'« Meanwhile » veut dire…',choices:['pendant ce temps','au milieu','cependant','en marge'],a:'pendant ce temps',
+ expl:'Meanwhile = pendant ce temps. Variante : in the meantime = entre-temps / en attendant.'},
+{id:'v74',cat:'vocab',type:'qcm',q:'« La campagne » (rurale) se dit…',choices:['campaign','countryside','country party','landside'],a:'countryside',
+ expl:'Deux « campagnes » ! Countryside = la campagne rurale ; campaign = la campagne (électorale, pub, projet).'},
+{id:'v75',cat:'vocab',type:'qcm',q:'« Celui-ci / celui-là » se dit…',choices:['this one / that one','here one / there one','the this / the that','it here / it there'],a:'this one / that one',
+ expl:'This one = celui-ci (proche), that one = celui-là (loin). « Je prends celui-ci » = I\'ll take this one.'},
+{id:'v76',cat:'vocab',type:'qcm',q:'« Un discours » se dit…',choices:['a speak','a speech','a talking','a discourse (courant)'],a:'a speech',
+ expl:'To talk / to speak = parler (verbes) ; a speech = un discours (nom). Give a speech = faire un discours.'},
+{id:'v77',cat:'vocab',type:'qcm',q:'« An argument », c\'est…',choices:['un argument (logique) uniquement','une dispute','un débat télévisé','un accord'],a:'une dispute',
+ expl:'Faux ami de vos notes ! An argument = une dispute, to argue = se disputer. « Un argument » = a point.'},
+{id:'v78',cat:'vocab',type:'qcm',q:'« Étroit » (une rue, un passage) se dit…',choices:['thin','narrow','slim','skinny'],a:'narrow',
+ expl:'Narrow = étroit (rue, couloir…) ; thin = fin/mince (objet, personne). A narrow street, a thin book.'},
+{id:'v79',cat:'vocab',type:'qcm',q:'Homographe : « tear » peut vouloir dire…',choices:['déchirer ET larme','uniquement larme','uniquement déchirer','trier'],a:'déchirer ET larme',
+ expl:'To tear (prononcé « tair ») = déchirer ; a tear (prononcé « tir ») = une larme. Même orthographe, deux prononciations !'},
+{id:'v80',cat:'vocab',type:'qcm',q:'Homographe : « bow » peut vouloir dire…',choices:['nœud papillon, arc, s\'incliner','uniquement l\'arc','le bateau uniquement','le coude'],a:'nœud papillon, arc, s\'incliner',
+ expl:'A bow (« bo ») = nœud papillon, arc (tir à l\'arc) ; to bow (« baou ») = s\'incliner. Trois sens de vos notes !'},
+{id:'v81',cat:'vocab',type:'qcm',q:'Homographe : « bear » veut dire…',choices:['ours, ET supporter (un poids)','uniquement ours','bière','naître'],a:'ours, ET supporter (un poids)',
+ expl:'A bear = un ours ; to bear = supporter, porter (une charge, une cause). I can\'t bear it = je ne le supporte pas.'},
+{id:'v82',cat:'vocab',type:'qcm',q:'Homographe : « tap » veut dire…',choices:['tapoter, ET robinet','taper fort','le tapis','la tape amicale uniquement'],a:'tapoter, ET robinet',
+ expl:'To tap = tapoter ; a tap (UK) = un robinet. (L\'évier, lui, c\'est the sink.) Tap water = eau du robinet.'},
+{id:'v83',cat:'vocab',type:'qcm',q:'« To carry out » (a plan, a task), c\'est…',choices:['exécuter, mener à bien','porter dehors','emporter (nourriture)','continuer'],a:'exécuter, mener à bien',
+ expl:'To carry out = exécuter, réaliser. Vu dans l\'article BBC : « she carried out the killings ». (À emporter = takeaway.)'},
+{id:'v84',cat:'vocab',type:'qcm',q:'« To testify », c\'est…',choices:['témoigner (dans un procès)','tester','signer','protester'],a:'témoigner (dans un procès)',
+ expl:'To testify = témoigner, attester (au tribunal). « Paula Musgrove testified this week… » Testimony = le témoignage.'},
+{id:'v85',cat:'vocab',type:'qcm',q:'« Her then-husband » signifie…',choices:['son mari de l\'époque','son futur mari','son ex-mari actuel','son second mari'],a:'son mari de l\'époque',
+ expl:'Then- devant un nom = « de l\'époque » : her then-husband, the then-president = le président d\'alors.'},
+{id:'v86',cat:'vocab',type:'qcm',q:'« Happiness », c\'est…',choices:['le bonheur (le fait d\'être heureux)','la joie ponctuelle','la chance','le hasard'],a:'le bonheur (le fait d\'être heureux)',
+ expl:'Happy (adjectif) + -ness → happiness (nom) = le fait d\'être heureux. La joie = joy. Le suffixe -ness fabrique des noms !'},
+{id:'v87',cat:'vocab',type:'qcm',q:'« Une tentative / un essai » se dit…',choices:['a try / an attempt','an essay','a trial','a taste'],a:'a try / an attempt',
+ expl:'A try = an attempt = une tentative. Pièges : an essay = une rédaction, a trial = un procès !'},
+{id:'c39',cat:'conj',type:'fill',q:'Whatever happens, we ___ (go) shopping.',a:['will go','\'ll go'],
+ expl:'Whatever happens = peu importe ce qu\'il se passe → la suite est au futur : we will go shopping.'},
+{id:'c41',cat:'conj',type:'fill',q:'While I ___ (eat), he was studying the data.',a:['was eating'],
+ expl:'Deux actions simultanées dans le passé → past continuous des deux côtés : While I was eating, he was studying.'},
+{id:'c42',cat:'conj',type:'fill',q:'Their ice cream ___ (melt) when I arrived.',a:['was melting'],
+ expl:'Action en cours dans le passé (la glace était en train de fondre) → past continuous : was melting.'},
+{id:'c43',cat:'conj',type:'fill',q:'I had warned them that they ___ open it now. (should + négation)',a:['shouldn\'t','should not'],
+ expl:'Je les avais prévenus qu\'ils ne devraient pas l\'ouvrir : should not (shouldn\'t) + base verbale.'},
+{id:'c44',cat:'conj',type:'fill',q:'I miss the ability to think that I ___ to have. (avant, j\'avais)',a:['used'],
+ expl:'Used to + verbe = « avant, je… » (habitude passée révolue) : the ability I used to have = que j\'avais avant.'},
+{id:'t46',cat:'trad',type:'order',q:'« Peu importe ce qu\'il se passe, on ira faire les courses »',a:'Whatever happens we will go shopping',extra:['Whenever','happen'],
+ expl:'Whatever happens = quoi qu\'il arrive. Faire les courses = go shopping. (Whenever = peu importe quand.)'},
+{id:'t47',cat:'trad',type:'write',q:'« J\'avais eu tant de choses à faire »',a:['I had had so many things to do','I\'d had so many things to do'],
+ expl:'Double had (past perfect de have) + things se compte → so MANY things. Vos notes exactement !'},
+{id:'t48',cat:'trad',type:'write',q:'« J\'avais eu tant de travail »',a:['I had had so much work','I\'d had so much work'],
+ expl:'Work est indénombrable → so MUCH work. (Things → many, work → much : la paire de vos notes.)'},
+{id:'t49',cat:'trad',type:'order',q:'« Je me vantais, et elle me détestait pour ça »',a:'I was showing off and she hated me for it',extra:['bragging','hate'],
+ alt:['I was bragging and she hated me for it'],
+ expl:'Deux réponses possibles : to show off = to brag = se vanter (comme dans vos notes !). Past continuous + passé simple.'},
+{id:'t50',cat:'trad',type:'order',q:'« Pendant qu\'il pleuvait, je naviguais sur le web »',a:'While it was raining I was browsing the web',extra:['during','navigated'],
+ expl:'While + past continuous. To browse = naviguer en ligne (jamais « to navigate » pour internet !).'},
+{id:'t51',cat:'trad',type:'write',q:'« Ils m\'avaient touché, je n\'apprécie pas ça »',a:['They had touched me, I don\'t appreciate that','They had touched me I do not appreciate that','They had touched me, I don\'t appreciate it'],
+ expl:'Antériorité → past perfect : They had touched me. Puis présent : I don\'t appreciate that.'},
+{id:'t52',cat:'trad',type:'order',q:'« Je m\'habille, et pendant ce temps, ma sœur déjeune »',a:'I\'m getting dressed and in the meantime my sister is having lunch',extra:['dressing myself','lunching'],
+ expl:'S\'habiller = to get dressed. In the meantime = pendant ce temps. Déjeuner = to have lunch.'},
+{id:'t53',cat:'trad',type:'write',q:'« Tant que tu n\'as pas de bonnes notes, tu ne sortiras pas » (commence par Until…)',a:['Until you get good grades, you will not go out','Until you get good grades, you won\'t go out','Until you have good grades, you will not go out','Until you have good grades, you won\'t go out'],
+ expl:'La correction de votre prof : Until you get good grades… = jusqu\'à ce que tu aies de bonnes notes. Grades = les notes.'},
+{id:'t54',cat:'trad',type:'write',q:'« Sa glace fondait » (à une personne de genre inconnu)',a:['Their ice cream was melting'],
+ expl:'Their = possessif singulier neutre (genre inconnu). Fondait = était en train de fondre → was melting.'},
+{id:'t55',cat:'trad',type:'order',q:'« D\'une manière ou d\'une autre, ses sourcils sont faits »',a:'Somehow their brows are done',extra:['brews','somewhat'],
+ expl:'Somehow = d\'une manière inconnue. Brows = sourcils (≠ brews = infusions !). Are done = sont faits.'},
+{id:'g33',cat:'gram',type:'qcm',q:'« Peu importe l\'endroit / n\'importe où » se dit…',choices:['wherever','whenever','however','whoever'],a:'wherever',
+ expl:'La famille des -ever : wherever (où), whenever (quand), whoever (qui), whatever (quoi), however (comment).'},
+{id:'g34',cat:'gram',type:'qcm',q:'« Louche / suspect » (adjectif) se dit…',choices:['suspect','suspicious','suspected','suspectful'],a:'suspicious',
+ expl:'Vos notes : to suspect = soupçonner (verbe), a suspect = un suspect (nom), suspicious = suspect/louche (adjectif).'},
+{id:'g35',cat:'gram',type:'qcm',q:'I\'d had so ___ work.',choices:['many','much','lots','plenty'],a:'much',
+ expl:'Work ne se compte pas → so much work. Things se comptent → so many things.'},
+{id:'g36',cat:'gram',type:'qcm',q:'« Se disputer » se dit…',choices:['to dispute','to argue','to discuss','to debate'],a:'to argue',
+ expl:'To argue = se disputer (et an argument = une dispute). To discuss = discuter calmement, sans conflit.'},
+{id:'g37',cat:'gram',type:'qcm',q:'« Entre-temps / en attendant » se dit…',choices:['in the meantime','in the while','at the meantime','during time'],a:'in the meantime',
+ expl:'In the meantime = entre-temps, en attendant. Meanwhile (sans in/the) = pendant ce temps.'},
+
+/* ---------- Ajouts du 07/09 (nouvelles notes) ---------- */
+{id:'v88',cat:'vocab',type:'qcm',q:'« Un quiproquo » se dit…',choices:['a quid pro quo','a misunderstanding','a quiz','a mix-up of persons only'],a:'a misunderstanding',
+ expl:'Faux ami de vos notes ! En anglais, quid pro quo = un troc (quelque chose contre quelque chose). Le quiproquo = a misunderstanding.'},
+{id:'v89',cat:'vocab',type:'qcm',q:'« Le lycée » se dit…',choices:['high school','college','lyceum','gymnasium'],a:'high school',
+ expl:'High school = lycée, high-schooler = lycéen. Les études supérieures = higher education.'},
+{id:'v90',cat:'vocab',type:'qcm',q:'« Une vis » se dit…',choices:['a nail','a screw','a bolt','a vice'],a:'a screw',
+ expl:'Screw = vis, nail = clou (et aussi… ongle !), bolt = boulon.'},
+{id:'v91',cat:'vocab',type:'qcm',q:'« You nailed it! » veut dire…',choices:['tu as tout raté','tu as géré / réussi parfaitement','tu l\'as cloué au mur','tu as triché'],a:'tu as géré / réussi parfaitement',
+ expl:'To nail it = réussir parfaitement. Et « you hit the nail on the head » = tu as visé juste. Le clou (nail) qu\'on plante bien !'},
+{id:'v92',cat:'vocab',type:'qcm',q:'« A shed », c\'est…',choices:['une cabane (de jardin)','une ombre','un hangar d\'avion','une échelle'],a:'une cabane (de jardin)',
+ expl:'A shed = une cabane. Et to shed = perdre/muer : a snake sheds its skin = le serpent mue. (L\'ombre = shade.)'},
+{id:'v93',cat:'vocab',type:'qcm',q:'« Engueuler quelqu\'un » se dit…',choices:['to tell somebody off','to shout somebody','to argue somebody','to scream at the off'],a:'to tell somebody off',
+ expl:'To tell somebody off = engueuler, remonter les bretelles. « They had touched me, so I told them off. »'},
+{id:'v94',cat:'vocab',type:'qcm',q:'« Une augmentation de salaire » se dit…',choices:['a pay raise','a salary grow','a wage up','a money lift'],a:'a pay raise',
+ expl:'A pay raise (US) / a pay rise (UK) = une augmentation de salaire. To raise = augmenter/lever.'},
+{id:'v95',cat:'vocab',type:'qcm',q:'« Soutenir quelqu\'un » (prendre son parti) se dit…',choices:['to back someone','to sustain someone','to hold someone','to under someone'],a:'to back someone',
+ expl:'To back someone (up) = soutenir, appuyer. « She agreed with me, she backed me. » (Back = aussi le dos !)'},
+{id:'v96',cat:'vocab',type:'qcm',q:'« L\'intrus » (dans un jeu : trouve l\'intrus) se dit…',choices:['the odd one out','the intruder','the stranger','the wrong one in'],a:'the odd one out',
+ expl:'The odd one out = l\'intrus (celui qui ne va pas avec les autres). The intruder = un intrus… qui entre chez vous !'},
+{id:'v97',cat:'vocab',type:'qcm',q:'« Tear » (larme) et « tear » (déchirer) se prononcent…',choices:['pareil','larme = « tir », déchirer = « tair »','déchirer = « tir », larme = « tair »','ni l\'un ni l\'autre ne se dit'],a:'larme = « tir », déchirer = « tair »',
+ expl:'A tear (« tir ») = une larme ; to tear (« tair ») = déchirer, passé : tore. « Somehow, he tore the contract. »'},
+{id:'v98',cat:'vocab',type:'qcm',q:'Dans « drive-thru », « thru » c\'est…',choices:['l\'orthographe informelle de through','un autre mot que through','le passé de throw','une abréviation de Thursday'],a:'l\'orthographe informelle de through',
+ expl:'Through = au travers (de). « Thru » est sa graphie informelle américaine : drive-thru = service au volant.'},
+{id:'c45',cat:'conj',type:'fill',q:'Somehow, he ___ (tear) the contract.',a:['tore'],
+ expl:'Verbe irrégulier : tear → tore → torn. « Il a déchiré le contrat » → passé simple : tore.'},
+{id:'c46',cat:'conj',type:'fill',q:'While I was typing, he ___ (study) the data.',a:['was studying'],
+ expl:'Deux actions simultanées dans le passé → past continuous : While I was typing, he was studying. To type = taper au clavier.'},
+{id:'c47',cat:'conj',type:'fill',q:'They had touched me, so I ___ (tell) them off.',a:['told'],
+ expl:'Passé simple de tell : told. To tell someone off = engueuler quelqu\'un.'},
+{id:'c48',cat:'conj',type:'fill',q:'I had ___ (plug) in my earphones, but the sound was still leaving my phone.',a:['plugged'],
+ expl:'Past perfect : had + participe passé → had plugged in = j\'avais branché. (Le vécu de tout le monde 😄)'},
+{id:'c49',cat:'conj',type:'fill',q:'His ice cream was melting, he ___ (have) to eat it fast.',a:['had'],
+ expl:'« Il a dû » = had to + verbe (obligation au passé). Have → had.'},
+{id:'t56',cat:'trad',type:'order',q:'« Afin de comprendre, tu dois essayer »',a:'In order to understand you must try',extra:['For','trying'],
+ expl:'Afin de = in order to + verbe. Must + base verbale (jamais « must to »).'},
+{id:'t57',cat:'trad',type:'write',q:'« Ils m\'avaient touché, donc je les ai engueulés »',a:['They had touched me, so I told them off','They had touched me so I told them off'],
+ expl:'Past perfect (had touched) puis passé simple. Engueuler = to tell someone off → I told them off.'},
+{id:'t58',cat:'trad',type:'write',q:'« D\'une manière ou d\'une autre, il a déchiré le contrat »',a:['Somehow, he tore the contract','Somehow he tore the contract','Somehow, he has torn the contract','Somehow he has torn the contract'],
+ expl:'Somehow + tear au passé : tore (tear → tore → torn).'},
+{id:'t59',cat:'trad',type:'order',q:'« On a essayé de passer, mais le couloir était trop étroit »',a:'We tried to pass but the corridor was too narrow',extra:['thin','tight'],
+ expl:'Étroit (passage) = narrow. Not wide enough = pas assez large. Thin = fin/mince, pas pour un couloir.'},
+{id:'t60',cat:'trad',type:'write',q:'« J\'avais eu autant d\'aide que toi »',a:['I had had as much help as you','I\'d had as much help as you'],
+ expl:'Autant de… que = as much … as (indénombrable) / as many … as (dénombrable). Help ne se compte pas → as much help.'},
+{id:'t61',cat:'trad',type:'order',q:'« Elle était d\'accord avec moi, elle m\'a soutenu »',a:'She agreed with me she backed me',extra:['was agree','held'],
+ expl:'Agree = verbe (she agreed, jamais « she was agree » !). Soutenir = to back someone.'},
+{id:'t62',cat:'trad',type:'order',q:'« Peu importe ce qu\'il se passe, on se parlera ce soir »',a:'Whatever happens we will talk to each other this evening',extra:['us','happen'],
+ expl:'Whatever happens (avec le -s !). Se parler = talk to each other (l\'un à l\'autre).'},
+{id:'t63',cat:'trad',type:'write',q:'« La vie est si dure quand on est si musclé »',a:['Life is so hard when you\'re so muscular','Life is so hard when you are so muscular'],
+ expl:'La phrase culte de vos notes 💪 « …without taking any gear » : gear = équipement, mais en argot… les produits dopants !'},
+{id:'g38',cat:'gram',type:'qcm',q:'I had as ___ help as you.',choices:['many','much','more','lots'],a:'much',
+ expl:'Autant de … que = as much/many … as. Help ne se compte pas → as much help as you.'},
+{id:'g39',cat:'gram',type:'qcm',q:'She has as ___ cats as me.',choices:['much','many','more','plenty'],a:'many',
+ expl:'Cats se comptent → as many cats as me. (Indénombrable → as much.)'},
+{id:'g40',cat:'gram',type:'qcm',q:'« Afin de » se dit…',choices:['in order to','for to','so that to','in aim to'],a:'in order to',
+ expl:'In order to + base verbale = afin de. « In order to understand, you must try. »'},
+];
+
+/* ================================================================ */
+const CATS = {
+  vocab:{label:'Vocabulaire', emoji:'📖'},
+  conj:{label:'Conjugaison', emoji:'⏳'},
+  trad:{label:'Traduction', emoji:'🔁'},
+  gram:{label:'Grammaire', emoji:'🧩'},
+};
+const STORE_KEY = 'carnet-anglais-v1';
+
+/* Temps attendu, affiché sous les questions de conjugaison */
+const TENSES = {
+  c1:'présent simple (habitude)', c2:'présent simple (négation)', c3:'présent simple (question)',
+  c4:'présent continu (be + -ing)', c5:'présent continu (be + -ing)', c6:'présent continu (be + -ing)',
+  c7:'passé simple (prétérit)', c8:'passé simple (prétérit)', c9:'passé simple (négation)',
+  c10:'passé continu (was/were + -ing)', c11:'passé continu (was/were + -ing)', c12:'passé continu (was/were + -ing)',
+  c13:'present perfect (have + participe)', c14:'present perfect (have/has + participe)', c15:'present perfect (have + participe)',
+  c16:'futur (will)', c17:'futur (will / going to)',
+  c18:'past perfect continu (had been + -ing)', c19:'past perfect (had + participe)',
+  c20:'hypothèse sur le passé', c21:'regret sur le passé', c22:'hypothèse au présent', c23:'hypothèse au présent',
+  c24:'past perfect (had + participe)', c25:'reproche sur le passé (should…)',
+  c26:'hypothèse sur le passé', c27:'après « would rather »', c28:'supposition passée (might…)',
+  c29:'hypothèse sur le passé', c30:'past perfect continu (had been + -ing)',
+  c31:'hypothèse sur le passé', c32:'hypothèse au présent', c33:'condition réelle (if + présent)',
+  c37:'passé simple (verbe irrégulier)', c38:'passé simple (verbe irrégulier)',
+  c39:'futur (will)', c41:'passé continu (was/were + -ing)', c42:'passé continu (was/were + -ing)',
+  c43:'conseil au passé rapporté (should)', c44:'habitude passée (used to)',
+  c45:'passé simple (verbe irrégulier)', c46:'passé continu (was/were + -ing)',
+  c47:'passé simple (verbe irrégulier)', c48:'past perfect (had + participe)', c49:'obligation passée (have to)',
+};
+
+/* ---------- state ---------- */
+let memStore = null; // fallback si localStorage indisponible
+function lsGet(){ try{ return localStorage.getItem(STORE_KEY); }catch(e){ return memStore; } }
+function lsSet(v){ try{ localStorage.setItem(STORE_KEY, v); }catch(e){ memStore = v; } }
+
+let store = load();
+let session = null; // {items, idx, correct, mistakes[], mode, answered, locked}
+
+function load(){
+  try{ const s = JSON.parse(lsGet()); if(s && s.profiles) return s; }catch(e){}
+  return {profiles:null, active:0};
+}
+function save(){ lsSet(JSON.stringify(store)); }
+function profile(){ return store.profiles[store.active]; }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+/* ---------- seeded rng for daily ---------- */
+function mulberry32(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function hashStr(s){ let h=1779033703; for(let i=0;i<s.length;i++){ h=Math.imul(h^s.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return h>>>0; }
+function seededShuffle(arr, rnd){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function shuffle(arr){ return seededShuffle(arr, Math.random); }
+
+/* ---------- answer normalization ---------- */
+const CONTRACTIONS = {
+  "i'm":"i am","you're":"you are","he's":"he is","she's":"she is","it's":"it is","we're":"we are","they're":"they are",
+  "i'll":"i will","you'll":"you will","he'll":"he will","she'll":"she will","it'll":"it will","we'll":"we will","they'll":"they will",
+  "won't":"will not","don't":"do not","doesn't":"does not","didn't":"did not","can't":"can not","cannot":"can not",
+  "couldn't":"could not","wouldn't":"would not","shouldn't":"should not","isn't":"is not","aren't":"are not",
+  "wasn't":"was not","weren't":"were not","haven't":"have not","hasn't":"has not","hadn't":"had not",
+  "would've":"would have","could've":"could have","should've":"should have","there's":"there is","that's":"that is",
+  "i've":"i have","you've":"you have","we've":"we have","they've":"they have"
+};
+function normalize(s){
+  s = (s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[.,!?;:«»"()]/g,' ').replace(/\s+/g,' ').trim();
+  s = s.split(' ').map(w => CONTRACTIONS[w] || w).join(' ');
+  return s;
+}
+/* Distance de Damerau-Levenshtein (fautes de frappe : lettre en trop/manquante,
+   substitution, inversion de deux lettres) */
+function lev(a,b){
+  if(a===b) return 0;
+  const m=a.length, n=b.length;
+  if(Math.abs(m-n)>2) return 3;
+  const dp=[];
+  for(let i=0;i<=m;i++){ dp[i]=[i]; }
+  for(let j=0;j<=n;j++){ dp[0][j]=j; }
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){
+    dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1 && j>1 && a[i-1]===b[j-2] && a[i-2]===b[j-1]) dp[i][j]=Math.min(dp[i][j], dp[i-2][j-2]+1);
+  }
+  return dp[m][n];
+}
+/* Synonymes acceptés indifféremment dans les traductions */
+const SYN=[['nice','good','great'],['movie','film'],['begin','start'],['big','large'],
+  ['maybe','perhaps'],['sofa','couch'],['quiet','silent'],['ill','sick'],['kid','child'],['kids','children']];
+function canonWord(w){ for(const g of SYN){ if(g.includes(w)) return g[0]; } return w; }
+function tokensOf(s){ return normalize(s).split(' ').filter(Boolean).map(canonWord); }
+/* Faute de frappe « lettre doublée » : forgott→forgot, studdied→studied.
+   (Sûre même en conjugaison : ne valide jamais un -s oublié.) */
+function isDoubledTypo(shorter, longer){
+  if(longer.length !== shorter.length+1) return false;
+  for(let i=0;i<longer.length;i++){
+    if(longer.slice(0,i)+longer.slice(i+1) === shorter &&
+       (longer[i]===longer[i+1] || longer[i]===longer[i-1])) return true;
+  }
+  return false;
+}
+/* mode 'strict' (conjugaison) : seule la lettre doublée est tolérée —
+   forget/forgot ou take/takes doivent rester faux. mode 'loose' (traduction) :
+   lettre en trop/manquante (mots ≥3), substitution/inversion (mots ≥5),
+   jusqu'à 2 mots concernés. */
+function fuzzyEqual(uT,aT,mode){
+  if(uT.length!==aT.length) return false;
+  let fuzz=0; const maxFuzz = mode==='strict'?1:2;
+  for(let i=0;i<uT.length;i++){
+    const u=uT[i], a=aT[i];
+    if(u===a) continue;
+    const d=lev(u,a);
+    let okTypo=false;
+    if(mode==='strict'){
+      okTypo = isDoubledTypo(a,u) || isDoubledTypo(u,a);
+    } else if(d===1){
+      if(u.length!==a.length) okTypo = Math.min(u.length,a.length)>=3;
+      else okTypo = u.length>=5;
+    }
+    if(!okTypo) return false;
+    if(++fuzz>maxFuzz) return false;
+  }
+  return true;
+}
+function answersMatch(user, accepted, mode){
+  const u = normalize(user);
+  if(accepted.some(a => normalize(a) === u)) return true;
+  const uT = tokensOf(user);
+  return accepted.some(a => fuzzyEqual(uT, tokensOf(a), mode||'loose'));
+}
+/* Vrai si la réponse est très proche : on affichera « Presque ! » */
+function nearMiss(user, accepted){
+  const u = normalize(user);
+  return accepted.some(a => { const n=normalize(a); return Math.abs(n.length-u.length)<=2 && lev(u,n)<=2; });
+}
+
+/* ---------- screens ---------- */
+const screens = ['profiles','home','quiz','results'];
+function show(name){
+  screens.forEach(s => document.getElementById('screen-'+s).classList.toggle('active', s===name));
+  document.getElementById('checkbar').style.display = (name==='quiz') ? 'block' : 'none';
+  hideFeedback();
+  window.scrollTo(0,0);
+}
+
+/* ---------- profiles ---------- */
+function renderProfiles(){
+  const list = document.getElementById('profile-list');
+  const setup = document.getElementById('profile-setup');
+  if(!store.profiles){
+    list.innerHTML=''; setup.style.display='block'; return;
+  }
+  setup.style.display='none';
+  list.innerHTML='';
+  store.profiles.forEach((p,i)=>{
+    const b = document.createElement('button');
+    b.className='profile-btn';
+    b.innerHTML = `<span class="avatar">${i===0?'🦊':'🐰'}</span><span>${esc(p.name)}</span>
+      <span style="margin-left:auto" class="badge">🔥 ${p.streak||0}</span>`;
+    b.onclick = ()=>{ store.active=i; save(); renderHome(); show('home'); };
+    list.appendChild(b);
+  });
+}
+document.getElementById('btn-create-profiles').onclick = ()=>{
+  const n1 = document.getElementById('name1').value.trim() || 'Profil 1';
+  const n2 = document.getElementById('name2').value.trim() || 'Profil 2';
+  store.profiles = [mkProfile(n1), mkProfile(n2)];
+  store.active = 0; save();
+  renderProfiles(); renderHome(); show('home');
+  syncNow();
+};
+function mkProfile(name){ return {name, xp:0, streak:0, lastDay:null, sessions:0, errors:[], daily:null}; }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ---------- home ---------- */
+function renderHome(){
+  const p = profile();
+  document.getElementById('home-title').textContent = 'Hello ' + p.name + ' !';
+  document.getElementById('stat-streak').textContent = p.streak||0;
+  document.getElementById('stat-xp').textContent = p.xp||0;
+  document.getElementById('stat-sessions').textContent = p.sessions||0;
+  const dd = document.getElementById('daily-desc');
+  if(p.daily && p.daily.date === todayStr()){
+    dd.textContent = `Fait aujourd'hui : ${p.daily.score}/${p.daily.total} ✅ — rejouable à volonté`;
+  } else {
+    dd.textContent = '10 questions — les mêmes pour vous deux 💙';
+  }
+  const rBtn = document.getElementById('btn-review');
+  const rDesc = document.getElementById('review-desc');
+  const n = (p.errors||[]).length;
+  rBtn.disabled = n===0;
+  rDesc.textContent = n===0 ? 'Aucune erreur en stock, bravo !' : `${n} question${n>1?'s':''} à retravailler`;
+  renderDuo();
+  refreshSyncStatus();
+}
+document.getElementById('btn-switch').onclick = ()=>{ renderProfiles(); show('profiles'); };
+
+/* ---------- session building ---------- */
+function dailyItems(){
+  const rnd = mulberry32(hashStr('carnet-'+todayStr()));
+  const byCat = {};
+  Object.keys(CATS).forEach(c => byCat[c] = seededShuffle(BANK.filter(i=>i.cat===c), rnd));
+  // 3 vocab, 3 trad, 2 conj, 2 gram
+  const picks = [...byCat.vocab.slice(0,3), ...byCat.trad.slice(0,3), ...byCat.conj.slice(0,2), ...byCat.gram.slice(0,2)];
+  return seededShuffle(picks, rnd);
+}
+document.getElementById('btn-daily').onclick = ()=> startSession(dailyItems(), 'daily');
+document.getElementById('btn-review').onclick = ()=>{
+  const p = profile();
+  const items = shuffle(BANK.filter(i => p.errors.includes(i.id))).slice(0,10);
+  if(items.length) startSession(items, 'review');
+};
+document.querySelectorAll('.cat').forEach(btn=>{
+  btn.onclick = ()=>{
+    const cat = btn.dataset.cat;
+    startSession(shuffle(BANK.filter(i=>i.cat===cat)).slice(0,8), 'cat:'+cat);
+  };
+});
+
+/* ---------- quiz engine ---------- */
+function startSession(items, mode){
+  session = {items, idx:0, correct:0, mistakes:[], mode, ui:{}};
+  stashSession();
+  show('quiz');
+  document.getElementById('quit-dialog').style.display='none';
+  renderQuestion();
+}
+/* confirm() du navigateur est bloqué dans les artifacts → dialogue intégré */
+document.getElementById('btn-quit').onclick = ()=>{
+  const d = document.getElementById('quit-dialog');
+  d.style.display = d.style.display==='none' ? 'block' : 'none';
+};
+document.getElementById('btn-quit-no').onclick = ()=>{
+  document.getElementById('quit-dialog').style.display='none';
+};
+document.getElementById('btn-quit-yes').onclick = ()=>{
+  session = null; stashSession();
+  document.getElementById('quit-dialog').style.display='none';
+  renderHome(); show('home');
+};
+
+/* Sauvegarde de la séance en cours : survit à un rechargement de la page
+   (ex. quand l'autre publie ses scores) */
+function stashSession(){
+  try{
+    if(!session){ sessionStorage.removeItem('ca-resume'); return; }
+    sessionStorage.setItem('ca-resume', JSON.stringify({
+      ids: session.items.map(i=>i.id), idx: session.idx, correct: session.correct,
+      mode: session.mode,
+      mistakes: session.mistakes.map(m=>({id:m.it.id, user:m.user, expected:m.expected}))
+    }));
+  }catch(e){}
+}
+function tryResume(){
+  let r=null;
+  try{ r = JSON.parse(sessionStorage.getItem('ca-resume')); }catch(e){}
+  if(!r || !r.ids) return false;
+  const items = r.ids.map(id => BANK.find(b=>b.id===id)).filter(Boolean);
+  if(items.length !== r.ids.length || r.idx >= items.length){
+    try{ sessionStorage.removeItem('ca-resume'); }catch(e){}
+    return false;
+  }
+  session = {items, idx:r.idx, correct:r.correct, mode:r.mode, ui:{},
+    mistakes: r.mistakes.map(m=>({it:BANK.find(b=>b.id===m.id), user:m.user, expected:m.expected})).filter(m=>m.it)};
+  show('quiz');
+  document.getElementById('quit-dialog').style.display='none';
+  renderQuestion();
+  return true;
+}
+
+function renderQuestion(){
+  const it = session.items[session.idx];
+  const total = session.items.length;
+  document.getElementById('quiz-count').textContent = (session.idx+1)+'/'+total;
+  document.getElementById('progress-fill').style.width = (session.idx/total*100)+'%';
+  document.getElementById('q-cat').textContent = CATS[it.cat].emoji+' '+CATS[it.cat].label;
+  const qt = document.getElementById('q-text');
+  const body = document.getElementById('q-body');
+  body.innerHTML='';
+  session.ui = {};
+  const checkBtn = document.getElementById('btn-check');
+  checkBtn.disabled = true;
+  checkBtn.style.display='block';
+
+  if(it.type==='qcm'){
+    qt.textContent = it.q;
+    const opts = shuffle(it.choices.slice());
+    const wrap = document.createElement('div'); wrap.className='opts';
+    opts.forEach(c=>{
+      const b=document.createElement('button'); b.className='opt'; b.textContent=c;
+      b.onclick=()=>{
+        wrap.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+        b.classList.add('selected'); session.ui.selected=c; checkBtn.disabled=false;
+      };
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+  }
+  else if(it.type==='fill' || it.type==='write'){
+    qt.innerHTML = (it.type==='write' ? 'Traduis : ' : '') + esc(it.q);
+    if(TENSES[it.id]){
+      const t=document.createElement('span'); t.className='tense';
+      t.textContent='🕐 Temps attendu : '+TENSES[it.id];
+      body.appendChild(t); body.appendChild(document.createElement('br'));
+    }
+    const inp = document.createElement('input');
+    inp.type='text'; inp.autocapitalize='off'; inp.setAttribute('autocorrect','off');
+    inp.spellcheck=false; inp.placeholder = it.type==='write' ? 'Écris ta traduction en anglais…' : 'Ta réponse…';
+    inp.oninput = ()=>{ checkBtn.disabled = inp.value.trim()===''; };
+    inp.onkeydown = (e)=>{ if(e.key==='Enter' && !checkBtn.disabled){ e.preventDefault(); onCheck(); } };
+    body.appendChild(inp);
+    session.ui.input = inp;
+    setTimeout(()=>{ if(window.innerWidth>700) inp.focus(); }, 100);
+  }
+  else if(it.type==='order'){
+    qt.textContent = 'Traduis : ' + it.q;
+    const zone = document.createElement('div'); zone.className='answer-zone';
+    const bank = document.createElement('div'); bank.className='chip-bank';
+    const words = it.a.split(' ').concat(it.extra||[]);
+    let chips = shuffle(words);
+    if(chips.join(' ')===it.a && chips.length>2) chips = chips.slice().reverse();
+    session.ui.placed = [];
+    chips.forEach((w,ci)=>{
+      const c=document.createElement('button'); c.className='chip'; c.textContent=w; c.dataset.i=ci;
+      c.onclick=()=>{
+        if(c.classList.contains('used')) return;
+        c.classList.add('used');
+        const z=document.createElement('button'); z.className='chip'; z.textContent=w;
+        z.onclick=()=>{ z.remove(); c.classList.remove('used');
+          session.ui.placed = session.ui.placed.filter(x=>x!==z);
+          checkBtn.disabled = session.ui.placed.length===0; };
+        zone.appendChild(z); session.ui.placed.push(z);
+        checkBtn.disabled = false;
+      };
+      bank.appendChild(c);
+    });
+    body.appendChild(zone); body.appendChild(bank);
+  }
+}
+
+document.getElementById('btn-check').onclick = onCheck;
+function onCheck(){
+  const it = session.items[session.idx];
+  let user='', ok=false, expected='';
+  if(it.type==='qcm'){
+    user = session.ui.selected; ok = user===it.a; expected = it.a;
+    document.querySelectorAll('.opt').forEach(o=>{
+      o.disabled = true;
+      if(o.textContent===it.a) o.classList.add('correct');
+      else if(o.classList.contains('selected')) o.classList.add('wrong');
+    });
+  } else if(it.type==='fill' || it.type==='write'){
+    user = session.ui.input.value;
+    ok = answersMatch(user, it.a, it.type==='fill' ? 'strict' : 'loose');
+    expected = it.a[0];
+    session.ui.input.disabled = true;
+  } else if(it.type==='order'){
+    user = session.ui.placed.map(z=>z.textContent).join(' ');
+    /* it.alt : autres phrases correctes constructibles avec les mêmes tuiles
+       (ex. « to show off » = « to brag ») */
+    const acceptedOrders = [it.a].concat(it.alt||[]);
+    ok = acceptedOrders.some(a => normalize(user)===normalize(a));
+    expected = it.a;
+  }
+  if(ok){ session.correct++; }
+  else {
+    session.mistakes.push({it, user, expected});
+    const p = profile();
+    if(!p.errors.includes(it.id)) p.errors.push(it.id);
+    save();
+  }
+  if(ok && session.mode==='review'){
+    const p = profile();
+    p.errors = p.errors.filter(id => id!==it.id); save();
+  }
+  document.getElementById('progress-fill').style.width = ((session.idx+1)/session.items.length*100)+'%';
+  const near = !ok && (it.type==='fill'||it.type==='write') && nearMiss(user, it.a);
+  showFeedback(ok, expected, it.expl, near);
+}
+
+const fb = document.getElementById('feedback');
+function showFeedback(ok, expected, expl, near){
+  document.getElementById('btn-check').style.display='none';
+  fb.classList.remove('good','bad');
+  fb.classList.add(ok?'good':'bad');
+  document.getElementById('fb-title').textContent = ok ? pick(['Bravo !','Exact !','Parfait !','Bien vu !','Yes !']) : (near ? 'Presque ! Regarde bien :' : pick(['Pas tout à fait…','Aïe…','Oups…']));
+  document.getElementById('fb-expected').textContent = ok ? '' : 'Bonne réponse : '+expected;
+  document.getElementById('fb-expected').style.display = ok ? 'none':'block';
+  document.getElementById('fb-expl').textContent = expl;
+  fb.classList.add('show');
+  document.getElementById('btn-continue').focus();
+}
+function hideFeedback(){ fb.classList.remove('show'); }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+document.getElementById('btn-continue').onclick = ()=>{
+  hideFeedback();
+  session.idx++;
+  stashSession();
+  if(session.idx >= session.items.length) finishSession();
+  else renderQuestion();
+};
+
+/* ---------- results ---------- */
+function finishSession(){
+  const p = profile();
+  const total = session.items.length, score = session.correct;
+  const xpGain = score*10 + (total-score)*2;
+  p.xp = (p.xp||0) + xpGain;
+  p.sessions = (p.sessions||0)+1;
+  // streak
+  const today = todayStr();
+  if(p.lastDay !== today){
+    const y = new Date(); y.setDate(y.getDate()-1);
+    const yest = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+    p.streak = (p.lastDay===yest) ? (p.streak||0)+1 : 1;
+    p.lastDay = today;
+  }
+  if(session.mode==='daily' && (!p.daily || p.daily.date!==today || score > p.daily.score)){
+    p.daily = {date:today, score, total};
+  }
+  save();
+
+  document.getElementById('res-score').textContent = score+'/'+total;
+  const perfect = score===total;
+  document.getElementById('res-title').textContent = perfect ? 'PERFECT ! 🎉' : (score>=total*0.7 ? 'Bien joué !' : 'Courage, ça rentre !');
+  document.getElementById('res-sub').textContent = `+${xpGain} XP · série : ${p.streak} jour${p.streak>1?'s':''} 🔥`;
+
+  const mw = document.getElementById('res-mistakes');
+  mw.innerHTML='';
+  if(perfect){
+    mw.innerHTML = '<div class="card" style="text-align:center">Tout bon, zéro faute — vous pouvez frimer auprès de l\'autre 😏</div>';
+    confetti();
+  } else {
+    const h = document.createElement('p'); h.className='catline'; h.textContent='À retenir ('+session.mistakes.length+')';
+    mw.appendChild(h);
+    session.mistakes.forEach(m=>{
+      const d=document.createElement('div'); d.className='mistake';
+      d.innerHTML = `<p class="q">${esc(m.it.type==='order'||m.it.type==='write' ? m.it.q : m.it.q)}</p>
+        <p class="yours">✗ Ta réponse : ${esc(m.user||'—')}</p>
+        <p class="good-a">✓ ${esc(m.expected)}</p>
+        <p class="why">💡 ${esc(m.it.expl)}</p>`;
+      mw.appendChild(d);
+    });
+  }
+  show('results');
+  renderHome();
+}
+document.getElementById('btn-res-home').onclick = async ()=>{
+  const b = document.getElementById('btn-res-home');
+  b.disabled = true; b.textContent = 'Partage du score…';
+  try{ await syncNow(); }catch(e){}
+  b.disabled = false; b.textContent = 'Accueil';
+  renderHome(); show('home');
+};
+document.getElementById('btn-res-again').onclick = ()=>{
+  if(session.mode==='daily') startSession(dailyItems(),'daily');
+  else if(session.mode==='review') document.getElementById('btn-review').click();
+  else if(session.mode.startsWith('cat:')){ const c=session.mode.slice(4); startSession(shuffle(BANK.filter(i=>i.cat===c)).slice(0,8),'cat:'+c); }
+  else startSession(dailyItems(),'daily');
+};
+
+/* ---------- synchronisation entre appareils ----------
+   Les scores partagés vivent dans une petite base Firebase (Realtime
+   Database, API REST en fetch). Chaque téléphone écrit son profil
+   (/carnet/scores/p0 ou p1) et lit celui de l'autre. */
+const PAGES_URL = 'https://naaylek.github.io/carnet-anglais/';
+const ON_ARTIFACT = /claude\.ai|claudeusercontent/i.test(location.hostname);
+const DB_KEY = 'carnet-anglais-dburl';
+let memDbUrl = '';
+function dbUrl(){ try{ return localStorage.getItem(DB_KEY)||memDbUrl; }catch(e){ return memDbUrl; } }
+function setDbUrl(u){ memDbUrl=u; try{ localStorage.setItem(DB_KEY,u); }catch(e){} }
+function validDbUrl(u){ return /^https:\/\/[\w-]+(\.[\w-]+)*\.(firebasedatabase\.app|firebaseio\.com)$/.test(u); }
+/* Lien pré-configuré : ?db=… dans l'URL enregistre la base en un clic */
+(function(){
+  try{
+    const u = new URLSearchParams(location.search).get('db');
+    if(u){
+      const clean = u.trim().replace(/\/+$/,'');
+      if(validDbUrl(clean)){ setDbUrl(clean); history.replaceState(null,'',location.pathname); }
+    }
+  }catch(e){}
+})();
+
+let REMOTE = {p0:null, p1:null};
+let lastPull = null;
+
+function statsOf(p, stamp){
+  return {name:p.name, xp:p.xp||0, streak:p.streak||0, sessions:p.sessions||0,
+          daily:p.daily||null, updated: stamp||null};
+}
+function endpoint(slot){
+  const u = dbUrl(); if(!u) return null;
+  return u + '/carnet/scores' + (slot===undefined ? '' : '/p'+slot) + '.json';
+}
+function setSyncStatus(kind, extra){
+  const el = document.getElementById('sync-status');
+  const btn = document.getElementById('btn-sync');
+  const setup = document.getElementById('db-setup');
+  const share = document.getElementById('db-share');
+  const msgs = {
+    setup:'',
+    live:'Synchro active ✓' + (lastPull ? ' — mis à jour à '+lastPull : ''),
+    locked:'La base est verrouillée : dans Firebase, onglet Règles, mets ".read": true et ".write": true puis Publie.',
+    error:'Base injoignable pour le moment — vérifie ta connexion, ça réessaiera tout seul.',
+    moved:'La synchro fonctionne sur la nouvelle adresse de l\'app 👉 ' + PAGES_URL,
+    syncing:'Synchronisation…',
+  };
+  el.textContent = msgs[kind] || '';
+  setup.hidden = kind !== 'setup';
+  btn.hidden = (kind==='setup' || kind==='moved');
+  btn.disabled = kind==='syncing';
+  share.hidden = !(kind==='live' && !ON_ARTIFACT && dbUrl());
+  if(!share.hidden){
+    document.getElementById('db-share-link').value = PAGES_URL + '?db=' + dbUrl();
+  }
+}
+async function pullScores(){
+  const ep = endpoint(); if(!ep) return false;
+  try{
+    const r = await fetch(ep, {cache:'no-store'});
+    if(r.status===401 || r.status===403){ setSyncStatus('locked'); return false; }
+    if(!r.ok) throw new Error('http '+r.status);
+    const j = await r.json();
+    REMOTE = {p0:(j && j.p0)||null, p1:(j && j.p1)||null};
+    const d = new Date();
+    lastPull = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    renderDuo();
+    setSyncStatus('live');
+    /* pré-remplir les prénoms sur un téléphone vierge */
+    if(!store.profiles){
+      if(REMOTE.p0 && REMOTE.p0.name) document.getElementById('name1').value = REMOTE.p0.name;
+      if(REMOTE.p1 && REMOTE.p1.name) document.getElementById('name2').value = REMOTE.p1.name;
+    }
+    return true;
+  }catch(e){ setSyncStatus(ON_ARTIFACT ? 'moved' : 'error'); return false; }
+}
+async function pushScores(){
+  if(!store.profiles) return false;
+  const ep = endpoint(store.active); if(!ep) return false;
+  setSyncStatus('syncing');
+  try{
+    const r = await fetch(ep, {method:'PUT', body: JSON.stringify(statsOf(profile(), todayStr()))});
+    if(r.status===401 || r.status===403){ setSyncStatus('locked'); return false; }
+    if(!r.ok) throw new Error('http '+r.status);
+    return await pullScores();
+  }catch(e){ setSyncStatus(ON_ARTIFACT ? 'moved' : 'error'); return false; }
+}
+async function syncNow(){ return dbUrl() ? await pushScores() : false; }
+function refreshSyncStatus(){
+  if(ON_ARTIFACT){ setSyncStatus('moved'); return; }
+  if(!dbUrl()){ setSyncStatus('setup'); return; }
+  pullScores();
+}
+document.getElementById('btn-sync').onclick = syncNow;
+document.getElementById('btn-db-save').onclick = ()=>{
+  const raw = document.getElementById('db-input').value.trim().replace(/\/+$/,'');
+  if(!validDbUrl(raw)){
+    document.getElementById('sync-status').textContent = 'Adresse invalide — elle doit ressembler à https://xxx.firebasedatabase.app';
+    return;
+  }
+  setDbUrl(raw);
+  refreshSyncStatus();
+  syncNow();
+};
+/* rafraîchissement : toutes les 25 s sur l'accueil + au retour sur l'app */
+setInterval(()=>{
+  if(!ON_ARTIFACT && dbUrl() && document.getElementById('screen-home').classList.contains('active')) pullScores();
+}, 25000);
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden && !ON_ARTIFACT && dbUrl()) pullScores();
+});
+
+function renderDuo(){
+  const rows = document.getElementById('duo-rows');
+  rows.innerHTML='';
+  const avatars=['🦊','🐰'];
+  [0,1].forEach(i=>{
+    let d;
+    if(store.profiles && i===store.active) d = statsOf(profile(), null);
+    else if(REMOTE['p'+i]) d = REMOTE['p'+i];
+    else if(store.profiles && store.profiles[i]) d = statsOf(store.profiles[i], null);
+    const div=document.createElement('div'); div.className='duo-row';
+    if(d){
+      const dailyTxt = (d.daily && d.daily.date===todayStr()) ? `aujourd'hui : ${d.daily.score}/${d.daily.total}` : 'pas encore joué aujourd\'hui';
+      div.innerHTML = `<span>${avatars[i]}</span><span class="name">${esc(d.name)}</span>
+        <span class="meta">⭐ ${d.xp} · 🔥 ${d.streak} · ${esc(dailyTxt)}</span>`;
+    } else {
+      div.innerHTML = `<span>${avatars[i]}</span><span class="name" style="color:var(--muted)">En attente de la première synchro…</span>`;
+    }
+    rows.appendChild(div);
+  });
+}
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors=['#2B50D8','#E2574B','#2E9E6B','#F2B233','#8CA2F2'];
+  const box=document.getElementById('confetti');
+  box.innerHTML='';
+  for(let i=0;i<70;i++){
+    const s=document.createElement('span');
+    s.style.left=(Math.random()*100)+'vw';
+    s.style.background=colors[i%colors.length];
+    s.style.animationDuration=(2.2+Math.random()*1.8)+'s';
+    s.style.animationDelay=(Math.random()*0.8)+'s';
+    s.style.transform='rotate('+(Math.random()*360)+'deg)';
+    box.appendChild(s);
+  }
+  setTimeout(()=>{ box.innerHTML=''; }, 5000);
+}
+
+/* ---------- boot ---------- */
+if(!ON_ARTIFACT && dbUrl()) pullScores(); /* pré-remplit aussi les prénoms si l'autre a déjà synchronisé */
+renderProfiles();
+if(store.profiles && tryResume()){
+  /* séance en cours restaurée après un rechargement */
+} else if(store.profiles){
+  renderHome(); show('home');
+} else {
+  show('profiles');
+}
+</script>
+
+</body>
+</html>
